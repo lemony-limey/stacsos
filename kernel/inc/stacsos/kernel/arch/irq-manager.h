@@ -9,17 +9,19 @@
 
 #include <stacsos/kernel/arch/irq.h>
 
-namespace stacsos::kernel::arch {
+namespace stacsos::kernel::arch
+{
 class core;
 
-class irq_manager {
+class irq_manager
+{
 public:
-	irq_manager(core &core)
+	irq_manager(core & core)
 		: core_(core)
 	{
 	}
 
-	irq *request_irq();
+	irq* request_irq();
 
 private:
 	core &core_;

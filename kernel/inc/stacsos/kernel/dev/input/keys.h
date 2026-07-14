@@ -7,8 +7,10 @@
  */
 #pragma once
 
-namespace stacsos::kernel::dev::input {
-enum class keys {
+namespace stacsos::kernel::dev::input
+{
+enum class keys 
+{
 	NO_KEY = 0,
 	UNKNOWN_KEY,
 

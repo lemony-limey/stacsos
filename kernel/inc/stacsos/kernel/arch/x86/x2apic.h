@@ -10,16 +10,17 @@
 #include <stacsos/kernel/arch/x86/msr.h>
 #include <stacsos/kernel/arch/x86/x2apic-structures.h>
 
-namespace stacsos::kernel::arch::x86 {
+namespace stacsos::kernel::arch::x86
+{
 class x86_core;
 
-class x2apic {
+class x2apic
+{
 public:
-	x2apic(x86_core &owner)
+	x2apic(x86_core & owner)
 		: owner_(owner)
 		, timer_frequency_(0)
-	{
-	}
+	{}
 
 	void init();
 
@@ -103,7 +104,7 @@ public:
 
 	u64 get_timer_frequency() const { return timer_frequency_; }
 
-	void set_icr(const x2apic_icr &icr) { msr::write(msr_indicies::X2APIC_ICR, icr.bits); }
+	void set_icr(const x2apic_icr & icr) { msr::write(msr_indicies::X2APIC_ICR, icr.bits); }
 
 	void activate_periodic_tick(u64 frequency)
 	{

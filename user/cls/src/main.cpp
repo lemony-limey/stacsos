@@ -10,7 +10,7 @@
 
 using namespace stacsos;
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	console::get().clear();
 	return 0;

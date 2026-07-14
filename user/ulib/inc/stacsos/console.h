@@ -12,7 +12,7 @@ class object;
 
 class console {
 public:
-	static console &get()
+	static console & get()
 	{
 		static console c;
 		return c;
@@ -20,8 +20,8 @@ public:
 
 	void init();
 
-	void write(const char *msg);
-	void writef(const char *msg, ...);
+	void write(const char* msg);
+	void writef(const char* msg, ...);
 	char read_char();
 	void clear();
 

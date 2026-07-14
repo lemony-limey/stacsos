@@ -7,9 +7,11 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
+namespace stacsos::kernel::arch::x86
+{
 
-enum class msr_indicies : unsigned {
+enum class msr_indicies : unsigned
+{
 	EFER = 0xc0000080,
 	STAR = 0xc0000081,
 	LSTAR = 0xc0000082,
@@ -92,7 +94,8 @@ enum class msr_indicies : unsigned {
 	X2APIC_SELF_IPI = 0x83f
 };
 
-template <msr_indicies index> class wrapped2_msr {
+template <msr_indicies index> class wrapped2_msr
+{
 public:
 	u64 read()
 	{
@@ -115,7 +118,8 @@ public:
 	static void unset(u64 value) { write(read() & ~value); }
 };
 
-template <msr_indicies index> class wrapped_msr {
+template <msr_indicies index> class wrapped_msr
+{
 public:
 	operator u64() const
 	{
@@ -125,7 +129,7 @@ public:
 		return (u64)low | (((u64)high) << 32);
 	}
 
-	wrapped_msr<index> &operator=(u64 msr_value)
+	wrapped_msr<index> & operator=(u64 msr_value)
 	{
 		u32 low = msr_value & 0xffffffff;
 		u32 high = (msr_value >> 32);
@@ -136,7 +140,8 @@ public:
 	}
 };
 
-class msrs {
+class msrs
+{
 public:
 	static wrapped_msr<msr_indicies::EFER> efer;
 	static wrapped_msr<msr_indicies::IA32_APIC_BASE> ia32_apic_base;
@@ -215,7 +220,8 @@ public:
 	static wrapped_msr<msr_indicies::X2APIC_SELF_IPI> x2apic_self_ipi;
 };
 
-class msr {
+class msr
+{
 public:
 	static void write(msr_indicies msr_id, u64 msr_value)
 	{

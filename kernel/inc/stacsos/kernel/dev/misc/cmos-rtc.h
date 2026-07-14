@@ -2,12 +2,14 @@
 
 #include <stacsos/kernel/dev/misc/rtc.h>
 
-namespace stacsos::kernel::dev::misc {
-class cmos_rtc : public rtc {
+namespace stacsos::kernel::dev::misc
+{
+class cmos_rtc : public rtc
+{
 public:
 	static device_class cmos_rtc_device_class;
 
-	cmos_rtc(bus &owner)
+	cmos_rtc(bus & owner)
 		: rtc(cmos_rtc_device_class, owner)
 	{
 	}

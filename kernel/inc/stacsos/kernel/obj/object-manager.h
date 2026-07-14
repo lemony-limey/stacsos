@@ -11,63 +11,68 @@
 #include <stacsos/kernel/obj/object.h>
 #include <stacsos/map.h>
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class process;
 } // namespace stacsos::kernel::sched
 
-namespace stacsos::kernel::obj {
-class object_manager {
+namespace stacsos::kernel::obj
+{
+class object_manager
+{
 	DEFINE_SINGLETON(object_manager);
 
 private:
 	object_manager()
 		: next_id_(1)
-	{
-	}
+	{}
 
 public:
-	shared_ptr<object> get_object(sched::process &owner, u64 id)
+	shared_ptr<object> get_object(sched::process & owner, u64 id)
 	{
-		map<u64, shared_ptr<object>> *process_object_map;
-		if (!objects_.try_get_value(&owner, process_object_map)) {
+		map<u64, shared_ptr<object>>* process_object_map;
+		if (!objects_.try_get_value(&owner, process_object_map))
+		{
 			return nullptr;
 		}
 
 		shared_ptr<object> optr;
-		if (!process_object_map->try_get_value(id, optr)) {
+		if (!process_object_map->try_get_value(id, optr))
+		{
 			return nullptr;
 		}
 
 		return optr;
 	}
 
-	void free_object(sched::process &owner, u64 id) { }
+	void free_object(sched::process & owner, u64 id) {}
 
-	shared_ptr<object> create_file_object(sched::process &owner, shared_ptr<fs::file> file)
+	shared_ptr<object> create_file_object(sched::process & owner, shared_ptr<fs::file> file)
 	{
 		return register_object(owner, new file_object(allocate_id(owner), file));
 	}
 
-	shared_ptr<object> create_process_object(sched::process &owner, shared_ptr<sched::process> proc)
+	shared_ptr<object> create_process_object(sched::process & owner, shared_ptr<sched::process> proc)
 	{
 		return register_object(owner, new process_object(allocate_id(owner), proc));
 	}
 
-	shared_ptr<object> create_thread_object(sched::process &owner, shared_ptr<sched::thread> thread)
+	shared_ptr<object> create_thread_object(sched::process & owner, shared_ptr<sched::thread> thread)
 	{
 		return register_object(owner, new thread_object(allocate_id(owner), thread));
 	}
 
 private:
 	atomic_u64 next_id_;
-	map<sched::process *, map<u64, shared_ptr<object>> *> objects_;
+	map<sched::process*, map<u64, shared_ptr<object>>*> objects_;
 
-	u64 allocate_id(sched::process &owner) { return next_id_++; }
+	u64 allocate_id(sched::process & owner) { return next_id_++; }
 
-	shared_ptr<object> register_object(sched::process &owner, object *o)
+	shared_ptr<object> register_object(sched::process & owner, object* o)
 	{
-		map<u64, shared_ptr<object>> *process_object_map;
-		if (!objects_.try_get_value(&owner, process_object_map)) {
+		map<u64, shared_ptr<object>>* process_object_map;
+		if (!objects_.try_get_value(&owner, process_object_map))
+		{
 			process_object_map = new map<u64, shared_ptr<object>>();
 			objects_.add(&owner, process_object_map);
 		}

@@ -10,22 +10,23 @@
 #include <stacsos/bitset.h>
 #include <stacsos/kernel/arch/x86/dt.h>
 
-namespace stacsos::kernel::arch::x86::irq {
+namespace stacsos::kernel::arch::x86::irq
+{
 using irq_handler_fn = void (*)(u8 irq, void *ctx, void *arg);
 
-template <int NR_IRQS> class irq_manager {
+template <int NR_IRQS> class irq_manager
+{
 public:
 	irq_manager(interrupt_descriptor_table<NR_IRQS> &idt)
 		: idt_(idt)
-	{
-	}
+	{}
 
 	void initialise();
 
-	u8 allocate_irq(irq_handler_fn handler, void *arg);
-	void reserve_irq(u8 irq_number, irq_handler_fn handler, void *arg);
-	void assign_irq(u8 irq_number, irq_handler_fn handler, void *arg);
-	void handle_irq(u8 irq_number, void *mcontext) { handlers_[irq_number](irq_number, mcontext, handler_args_[irq_number]); }
+	u8 allocate_irq(irq_handler_fn handler, void* arg);
+	void reserve_irq(u8 irq_number, irq_handler_fn handler, void* arg);
+	void assign_irq(u8 irq_number, irq_handler_fn handler, void* arg);
+	void handle_irq(u8 irq_number, void* mcontext) { handlers_[irq_number](irq_number, mcontext, handler_args_[irq_number]); }
 
 private:
 	interrupt_descriptor_table<NR_IRQS> &idt_;

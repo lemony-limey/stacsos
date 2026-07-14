@@ -9,8 +9,10 @@
 
 #include <stacsos/kernel/debug.h>
 
-namespace stacsos::kernel::arch::x86 {
-struct base_entry {
+namespace stacsos::kernel::arch::x86
+{
+struct base_entry
+{
 	u64 bits;
 
 	bool present() const { return get_bit(0); }
@@ -48,25 +50,30 @@ private:
 
 } __packed;
 
-template <typename E> struct base_table {
+template <typename E> struct base_table
+{
 	E entries[0x200];
 
-	const E &operator[](int index) const { return entries[index]; }
-	E &operator[](int index) { return entries[index]; }
+	const E & operator[](int index) const { return entries[index]; }
+	E & operator[](int index) { return entries[index]; }
 
 	void dump() const;
 } __packed;
 
-struct pte : base_entry {
+struct pte : base_entry
+{
 } __packed;
 
-struct pde : base_entry {
+struct pde : base_entry
+{
 } __packed;
 
-struct pdpe : base_entry {
+struct pdpe : base_entry
+{
 } __packed;
 
-struct pml4e : base_entry {
+struct pml4e : base_entry
+{
 	u64 pde_base_address() const { return bits & 1; }
 } __packed;
 

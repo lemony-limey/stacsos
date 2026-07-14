@@ -9,12 +9,14 @@
 
 #include <stacsos/kernel/dev/device.h>
 
-namespace stacsos::kernel::dev::timers {
-class timer : public device {
+namespace stacsos::kernel::dev::timers
+{
+class timer : public device
+{
 public:
 	static device_class timer_device_class;
 
-	timer(device_class &devclass, bus &parent)
+	timer(device_class & devclass, bus & parent)
 		: device(devclass, parent)
 	{
 	}

@@ -11,7 +11,7 @@
 
 using namespace stacsos;
 
-static void *thread1(void *arg)
+static void* thread1(void* arg)
 {
 	while (true) {
 		console::get().write("thread 1\n");
@@ -21,7 +21,7 @@ static void *thread1(void *arg)
 	return nullptr;
 }
 
-static void *thread2(void *arg)
+static void* thread2(void* arg)
 {
 	while (true) {
 		console::get().write("thread 2\n");
@@ -31,7 +31,7 @@ static void *thread2(void *arg)
 	return nullptr;
 }
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	thread *ta = thread::start(thread1);
 	thread *tb = thread::start(thread2);

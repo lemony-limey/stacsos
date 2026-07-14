@@ -9,6 +9,7 @@
 
 #include <stacsos/avl-tree.h>
 
-namespace stacsos {
+namespace stacsos
+{
 template <class K, class D> using map = avl_tree<K, D>;
 }

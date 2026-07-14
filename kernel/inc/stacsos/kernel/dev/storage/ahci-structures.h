@@ -7,7 +7,8 @@
  */
 #pragma once
 
-namespace stacsos::kernel::dev::storage {
+namespace stacsos::kernel::dev::storage
+{
 #define SATA_SIG_ATA 0x00000101
 
 #define HBA_PxCMD_ST 0x0001
@@ -22,7 +23,8 @@ namespace stacsos::kernel::dev::storage {
 #define ATA_CMD_READ_DMA_EX 0xc8
 #define ATA_CMD_IDENTIFY 0xec
 
-enum class fis_type : u8 {
+enum class fis_type : u8
+{
 	FIS_TYPE_REG_H2D = 0x27, // Register FIS - host to device
 	FIS_TYPE_REG_D2H = 0x34, // Register FIS - device to host
 	FIS_TYPE_DMA_ACT = 0x39, // DMA activate FIS - device to host
@@ -33,7 +35,8 @@ enum class fis_type : u8 {
 	FIS_TYPE_DEV_BITS = 0xA1, // Set device bits FIS - device to host
 };
 
-struct fis_reg_host2device {
+struct fis_reg_host2device
+{
 	// DWORD 0
 	fis_type type; // FIS_TYPE_REG_H2D
 
@@ -66,7 +69,8 @@ struct fis_reg_host2device {
 	u8 rsv1[4]; // Reserved
 } __packed;
 
-struct hba_cmd_header {
+struct hba_cmd_header
+{
 	// DW0
 	u8 cfl : 5; // Command FIS length in DWORDS, 2 ~ 16
 	u8 a : 1; // ATAPI
@@ -92,7 +96,8 @@ struct hba_cmd_header {
 	u32 rsv1[4]; // Reserved
 } __packed;
 
-struct hba_port {
+struct hba_port
+{
 	u32 command_list_base_addr;
 	u32 command_list_base_addr_hi;
 	u32 fis_base_addr;
@@ -114,8 +119,10 @@ struct hba_port {
 	u32 vendor[4];
 } __packed;
 
-struct hba_mem {
-	struct {
+struct hba_mem
+{
+	struct
+	{
 		u32 host_capabilities;
 		u32 global_host_control;
 		u32 interrupt_status;
@@ -136,7 +143,8 @@ struct hba_mem {
 	hba_port ports[];
 } __packed;
 
-struct hba_prdt_entry {
+struct hba_prdt_entry
+{
 	u32 dba; // Data base address
 	u32 dbau; // Data base address upper 32 bits
 	u32 rsv0; // Reserved
@@ -147,7 +155,8 @@ struct hba_prdt_entry {
 	u32 i : 1; // Interrupt on completion
 } __packed;
 
-struct hba_cmd_table {
+struct hba_cmd_table
+{
 	// 0x00
 	u8 cfis[64]; // Command FIS
 

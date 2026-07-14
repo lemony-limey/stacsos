@@ -9,7 +9,7 @@
 
 using namespace stacsos;
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	syscalls::poweroff();
 	return 0;

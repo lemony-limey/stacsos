@@ -7,13 +7,14 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
-class tsc {
+namespace stacsos::kernel::arch::x86
+{
+class tsc
+{
 public:
 	tsc()
 		: timer_frequency_(0)
-	{
-	}
+	{}
 
 	void calibrate();
 
@@ -30,7 +31,8 @@ public:
 		u64 millisecond_period = (frequency() * milliseconds) / 1000ull;
 		u64 target = read() + millisecond_period;
 
-		while (read() < target) {
+		while (read() < target)
+		{
 			__relax();
 		}
 	}

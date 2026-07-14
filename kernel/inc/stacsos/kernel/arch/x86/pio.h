@@ -7,8 +7,10 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
-class pio {
+namespace stacsos::kernel::arch::x86
+{
+class pio
+{
 public:
 	template <u8 port> static void outb(u8 data) { asm volatile("outb %%al, %1" ::"a"(data), "i"(port)); }
 	static void outb(u16 port, u8 data) { asm volatile("outb %%al, %%dx" ::"a"(data), "d"(port)); }
@@ -53,7 +55,8 @@ public:
 
 template <u16 port, bool eight_bit> class ioport_impl;
 
-template <u16 port> class ioport_impl<port, true> {
+template <u16 port> class ioport_impl<port, true>
+{
 public:
 	static void write8(u8 b) { pio::outb<port>(b); }
 	static void write16(u16 b) { pio::outw<port>(b); }
@@ -64,7 +67,8 @@ public:
 	static u32 read32() { return pio::inl(port); }
 };
 
-template <u16 port> class ioport_impl<port, false> {
+template <u16 port> class ioport_impl<port, false>
+{
 public:
 	static void write8(u8 b) { pio::outb(port, b); }
 	static void write16(u16 b) { pio::outw(port, b); }
@@ -75,9 +79,10 @@ public:
 	static u32 read32() { return pio::inl(port); }
 };
 
-template <u16 port> class ioport : public ioport_impl<port, (port < 0x100)> { };
+template <u16 port> class ioport : public ioport_impl<port, (port < 0x100)> {};
 
-class ioports {
+class ioports
+{
 public:
 	using pic1_command = ioport<0x20>;
 	using pic1_data = ioport<0x21>;

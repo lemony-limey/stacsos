@@ -7,10 +7,12 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
-static void __cpuid(u32 &eax, u32 &ebx, u32 &ecx, u32 &edx) { asm volatile("cpuid" : "+a"(eax), "+b"(ebx), "+c"(ecx), "+d"(edx)); }
+namespace stacsos::kernel::arch::x86
+{
+static void __cpuid(u32 & eax, u32 & ebx, u32 & ecx, u32 & edx) { asm volatile("cpuid" : "+a"(eax), "+b"(ebx), "+c"(ecx), "+d"(edx)); }
 
-enum class cpuid_features {
+enum class cpuid_features
+{
 #define feature(__name, __leaf, __reg, __bit) __name,
 #define feature2(__name, __leaf, __add, __reg, __bit) __name,
 #include <stacsos/kernel/arch/x86/cpuid-features.h>
@@ -21,7 +23,8 @@ enum class cpuid_features {
 
 enum class cpuid_feature_reg { eax, ebx, ecx, edx };
 
-struct cpuid_mapping {
+struct cpuid_mapping
+{
 	int fn, ext;
 	cpuid_feature_reg rg;
 	int bit;
@@ -30,7 +33,8 @@ struct cpuid_mapping {
 	bool value;
 };
 
-class cpuid {
+class cpuid
+{
 public:
 	cpuid();
 
@@ -39,7 +43,7 @@ public:
 
 	bool get_feature(cpuid_features feature) const { return mapping_[static_cast<int>(feature)].value; }
 
-	void mfr_id(u32 &max_func, char *buffer) const
+	void mfr_id(u32 & max_func, char* buffer) const
 	{
 		u32 ebx = 0, ecx = 0, edx = 0;
 

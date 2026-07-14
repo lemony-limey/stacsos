@@ -10,7 +10,7 @@
 namespace stacsos {
 class process {
 public:
-	static process *create(const char *path, const char *args);
+	static process* create(const char* path, const char* args);
 
 	void wait_for_exit();
 

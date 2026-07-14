@@ -9,18 +9,20 @@
 
 #include <stacsos/kernel/fs/filesystem.h>
 
-namespace stacsos::kernel::fs {
+namespace stacsos::kernel::fs
+{
 
-class vfs {
+class vfs
+{
 	DEFINE_SINGLETON(vfs)
 
 private:
-	vfs() { }
+	vfs() {}
 
 	root_filesystem rootfs_;
 
 public:
 	void init();
-	fs_node *lookup(const char *path);
+	fs_node* lookup(const char* path);
 };
 } // namespace stacsos::kernel::fs

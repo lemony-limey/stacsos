@@ -10,14 +10,16 @@
 #include <stacsos/kernel/arch/x86/pio.h>
 #include <stacsos/kernel/dev/timers/timer.h>
 
-namespace stacsos::kernel::dev::timers {
+namespace stacsos::kernel::dev::timers
+{
 using namespace stacsos::kernel::arch::x86;
 
-class pit : public timer {
+class pit : public timer
+{
 public:
 	static device_class pit_device_class;
 
-	pit(bus &parent)
+	pit(bus & parent)
 		: timer(pit_device_class, parent)
 	{
 	}

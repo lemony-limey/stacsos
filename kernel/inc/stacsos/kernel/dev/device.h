@@ -12,31 +12,33 @@
 #include <stacsos/kernel/fs/file.h>
 #include <stacsos/memory.h>
 
-namespace stacsos::kernel::fs {
+namespace stacsos::kernel::fs
+{
 class file;
 }
 
-namespace stacsos::kernel::dev {
+namespace stacsos::kernel::dev
+{
 
-class device {
+class device
+{
 public:
-	device(device_class &devclass, bus &bus)
+	device(device_class & devclass, bus & bus)
 		: devclass_(devclass)
 		, bus_(bus)
-	{
-	}
+	{}
 
 	virtual ~device() { }
-	device_class &devclass() const { return devclass_; }
+	device_class & devclass() const { return devclass_; }
 
-	bus &parent_bus() const { return bus_; }
+	bus & parent_bus() const { return bus_; }
 
 	virtual void configure() = 0;
 
 	virtual shared_ptr<fs::file> open_as_file() { return nullptr; }
 
 private:
-	device_class &devclass_;
-	bus &bus_;
+	device_class& devclass_;
+	bus& bus_;
 };
 } // namespace stacsos::kernel::dev

@@ -1,7 +1,10 @@
 #pragma once
 
-namespace stacsos {
-template <class T> class vector {
+namespace stacsos
+{
+
+template <class T> class vector
+{
 public:
 	vector()
 		: storage_(new T[0])
@@ -67,4 +70,5 @@ private:
 	T *storage_;
 	size_t size_;
 };
+
 } // namespace stacsos

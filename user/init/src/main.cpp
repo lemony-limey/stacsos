@@ -87,7 +87,7 @@ static void logo()
 	}
 }
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	logo();
 

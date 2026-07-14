@@ -10,10 +10,12 @@
 #include <stacsos/kernel/arch/x86/pio.h>
 #include <stacsos/kernel/debug.h>
 
-namespace stacsos::kernel::dev::pci {
+namespace stacsos::kernel::dev::pci
+{
 using stacsos::kernel::arch::x86::ioports;
 
-enum class pci_native_device_class {
+enum class pci_native_device_class
+{
 	NONE = 0,
 	MASS_STORAGE = 1,
 	NETWORK = 2,
@@ -35,14 +37,16 @@ enum class pci_native_device_class {
 	NA = 0xFF
 };
 
-struct pci_device_status {
+struct pci_device_status
+{
 	pci_device_status(u16 bits)
 		: bits_(bits)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			u16 reserved2 : 3;
 			u16 interrupt_status : 1;
 			u16 capabilities_list : 1;
@@ -61,20 +65,21 @@ struct pci_device_status {
 	};
 } __packed;
 
-struct pci_transport {
+struct pci_transport
+{
 	virtual ~pci_transport() { }
 
 	virtual u32 read_config_word(u8 offset) const = 0;
 	virtual void write_config_word(u8 offset, u32 value) = 0;
 };
 
-struct pci_legacy_transport : pci_transport {
+struct pci_legacy_transport : pci_transport
+{
 	pci_legacy_transport(unsigned int bus, unsigned int slot, unsigned int func)
 		: bus_(bus)
 		, slot_(slot)
 		, func_(func)
-	{
-	}
+	{}
 
 	u32 read_config_word(u8 offset) const override
 	{
@@ -98,7 +103,7 @@ private:
 };
 
 struct pcie_transport : pci_transport {
-	pcie_transport(void *base)
+	pcie_transport(void* base)
 		: base_(base)
 	{
 	}
@@ -108,15 +113,15 @@ struct pcie_transport : pci_transport {
 	void write_config_word(u8 offset, u32 value) override { *(u32 *)((uintptr_t)base_ | (offset & ~3u)) = value; }
 
 private:
-	void *base_;
+	void* base_;
 };
 
-class pci_device_configuration {
+class pci_device_configuration
+{
 public:
 	pci_device_configuration(pci_transport &transport)
 		: transport_(transport)
-	{
-	}
+	{}
 
 	DELETE_DEFAULT_COPY_AND_MOVE(pci_device_configuration)
 
@@ -146,7 +151,8 @@ public:
 
 	u32 bar_by_index(int index)
 	{
-		if (index < 0 || index > 5) {
+		if (index < 0 || index > 5)
+		{
 			return -1;
 		}
 
@@ -217,7 +223,7 @@ public:
 	}
 
 private:
-	pci_transport &transport_;
+	pci_transport & transport_;
 
 	u32 read_config_word(u8 offset) const { return transport_.read_config_word(offset); }
 	void write_config_word(u8 offset, u32 value) { transport_.write_config_word(offset, value); }

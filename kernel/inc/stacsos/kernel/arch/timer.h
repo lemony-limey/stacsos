@@ -7,21 +7,22 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch {
-typedef void (*timer_callback)(void *);
-class timer {
+namespace stacsos::kernel::arch
+{
+typedef void (*timer_callback)(void*);
+class timer
+{
 public:
 	timer()
 		: cb_(nullptr)
 		, cb_arg_(nullptr)
-	{
-	}
+	{}
 
 	virtual ~timer() { }
 
 	virtual void init() = 0;
 
-	void set_callback(timer_callback cb, void *arg = nullptr)
+	void set_callback(timer_callback cb, void* arg = nullptr)
 	{
 		cb_ = cb;
 		cb_arg_ = arg;
@@ -32,6 +33,6 @@ public:
 
 private:
 	timer_callback cb_;
-	void *cb_arg_;
+	void* cb_arg_;
 };
 } // namespace stacsos::kernel::arch

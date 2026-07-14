@@ -12,7 +12,10 @@ using namespace stacsos;
 string string::pad(int width, char ch, pad_side side)
 {
 	if ((size_t)width <= size_)
+	{
 		return *this;
+	}
+		
 
 	int nr_pad_chars = width - size_;
 

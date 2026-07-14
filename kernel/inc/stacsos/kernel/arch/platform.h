@@ -9,12 +9,13 @@
 
 #include <stacsos/kernel/dev/bus.h>
 
-namespace stacsos::kernel::arch {
-class platform : public dev::bus {
+namespace stacsos::kernel::arch
+{
+class platform : public dev::bus
+{
 public:
 	platform()
 		: dev::bus()
-	{
-	}
+	{}
 };
 } // namespace stacsos::kernel::arch

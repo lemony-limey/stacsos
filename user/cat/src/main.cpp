@@ -11,7 +11,7 @@
 
 using namespace stacsos;
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	if (!cmdline || memops::strlen(cmdline) == 0) {
 		console::get().write("error: usage: cat [-f] <filename>\n");

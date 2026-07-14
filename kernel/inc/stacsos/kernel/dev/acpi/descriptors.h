@@ -7,9 +7,11 @@
  */
 #pragma once
 
-namespace stacsos::kernel::dev::acpi {
+namespace stacsos::kernel::dev::acpi
+{
 // Describes an entry in the RSDP
-struct rsdp_descriptor {
+struct rsdp_descriptor
+{
 	u64 signature;
 	u8 checksum;
 	char oem_id[6];
@@ -18,7 +20,8 @@ struct rsdp_descriptor {
 } __packed;
 
 // Describes an entry in the RSDT
-struct sdt_header {
+struct sdt_header
+{
 	u32 signature;
 	u32 length;
 	u8 revision;
@@ -31,23 +34,27 @@ struct sdt_header {
 } __packed;
 
 // Describes the RSDT
-struct rsdt_table {
+struct rsdt_table
+{
 	sdt_header header;
 	u32 sdt_pointers[0];
 } __packed;
 
-struct madt_record_header {
+struct madt_record_header
+{
 	u8 type, length;
 } __packed;
 
-struct madt_record_lapic {
+struct madt_record_lapic
+{
 	madt_record_header header;
 	u8 acpi_processor_id;
 	u8 apic_id;
 	u32 flags;
 } __packed;
 
-struct madt_record_ioapic {
+struct madt_record_ioapic
+{
 	madt_record_header header;
 	u8 ioapic_id;
 	u8 reserved;
@@ -55,7 +62,8 @@ struct madt_record_ioapic {
 	u32 gsi_base;
 } __packed;
 
-struct madt_record_interrupt_source_override {
+struct madt_record_interrupt_source_override
+{
 	madt_record_header header;
 	u8 bus_source;
 	u8 irq_source;
@@ -63,14 +71,16 @@ struct madt_record_interrupt_source_override {
 	u16 flags;
 } __packed;
 
-struct madt {
+struct madt
+{
 	sdt_header header;
 	u32 lca;
 	u32 flags;
 	madt_record_header records; // VARIABLE LENGTH
 } __packed;
 
-struct fadt_generic_address {
+struct fadt_generic_address
+{
 	u8 address_space;
 	u8 bit_width;
 	u8 bit_offset;
@@ -78,7 +88,8 @@ struct fadt_generic_address {
 	u64 address;
 } __packed;
 
-struct fadt {
+struct fadt
+{
 	sdt_header header;
 	u32 firmware_ctl;
 	u32 dsdt;
@@ -147,12 +158,14 @@ struct fadt {
 	fadt_generic_address x_gpe1_block;
 } __packed;
 
-struct dsdt {
+struct dsdt
+{
 	sdt_header header;
 	u8 definition_block[0];
 } __packed;
 
-struct hpet {
+struct hpet
+{
 	sdt_header header;
 	u8 hardware_rev_id;
 	u8 comparator_count : 5;
@@ -166,7 +179,8 @@ struct hpet {
 	u8 page_protection;
 } __packed;
 
-struct configuration_space_base_address_allocation {
+struct configuration_space_base_address_allocation
+{
 	u64 base_address;
 	u16 segment_group_nr;
 	u8 starting_pci_bus;
@@ -174,7 +188,8 @@ struct configuration_space_base_address_allocation {
 	u32 reserved;
 } __packed;
 
-struct mcfg {
+struct mcfg
+{
 	sdt_header header;
 	u64 reserved;
 	configuration_space_base_address_allocation base_addresses[];

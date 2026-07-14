@@ -7,10 +7,18 @@
  */
 #pragma once
 
-namespace stacsos {
-enum class syscall_result_code : u64 { ok = 0, not_found = 1, not_supported = 2 };
+namespace stacsos
+{
 
-enum class syscall_numbers {
+enum class syscall_result_code : u64
+{ 
+	ok = 0, 
+	not_found = 1, 
+	not_supported = 2 
+};
+
+enum class syscall_numbers
+{
 	exit = 0,
 	open = 1,
 	close = 2,
@@ -31,7 +39,8 @@ enum class syscall_numbers {
 	ioctl = 17
 };
 
-struct syscall_result {
+struct syscall_result
+{
 	syscall_result_code code;
 	u64 data;
 } __packed;

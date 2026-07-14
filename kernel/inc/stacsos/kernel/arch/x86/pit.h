@@ -9,8 +9,10 @@
 
 #include <stacsos/kernel/arch/x86/pio.h>
 
-namespace stacsos::kernel::arch::x86 {
-class pit {
+namespace stacsos::kernel::arch::x86
+{
+class pit
+{
 public:
 	void init_oneshot(u64 period)
 	{
@@ -55,10 +57,12 @@ public:
 		u64 millisecond_period = frequency() / 1000ull;
 		init_oneshot(millisecond_period);
 
-		for (u64 i = 0; i < milliseconds; i++) {
+		for (u64 i = 0; i < milliseconds; i++)
+		{
 			go();
 
-			while (!expired()) {
+			while (!expired())
+			{
 				__relax();
 			}
 		}

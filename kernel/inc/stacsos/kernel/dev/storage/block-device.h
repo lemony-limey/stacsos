@@ -10,41 +10,43 @@
 #include <stacsos/kernel/dev/device.h>
 #include <stacsos/kernel/sched/completion.h>
 
-namespace stacsos::kernel::dev::storage {
+namespace stacsos::kernel::dev::storage
+{
 enum class block_io_request_direction { read, write };
 
 struct block_io_request;
 
-struct block_io_request {
+struct block_io_request
+{
 	block_io_request_direction direction;
 	u64 start_block;
 	u64 block_count;
-	void *buffer;
+	void* buffer;
 	sched::completion completion;
 };
 
-class block_device : public device {
+class block_device : public device
+{
 public:
 	static device_class block_device_class;
 
-	block_device(device_class &devclass, bus &parent)
+	block_device(device_class & devclass, bus & parent)
 		: device(devclass, parent)
-	{
-	}
+	{}
 
-	virtual ~block_device() { }
+	virtual ~block_device() {}
 
 	virtual u64 nr_blocks() const = 0;
 
-	void submit_io_request(block_io_request &request);
+	void submit_io_request(block_io_request & request);
 
-	void read_blocks_sync(void *buffer, u64 start, u64 count);
-	void write_blocks_sync(const void *buffer, u64 start, u64 count);
+	void read_blocks_sync(void* buffer, u64 start, u64 count);
+	void write_blocks_sync(const void* buffer, u64 start, u64 count);
 
 protected:
-	virtual void submit_real_io_request(block_io_request &request) = 0;
+	virtual void submit_real_io_request(block_io_request & request) = 0;
 
 private:
-	void submit_sync_request(block_io_request_direction direction, void *buffer, u64 start, u64 count);
+	void submit_sync_request(block_io_request_direction direction, void* buffer, u64 start, u64 count);
 };
 } // namespace stacsos::kernel::dev::storage

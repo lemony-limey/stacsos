@@ -2,16 +2,19 @@
 
 #include <stacsos/kernel/dev/device.h>
 
-namespace stacsos::kernel::dev::misc {
-struct rtc_timepoint {
+namespace stacsos::kernel::dev::misc
+{
+struct rtc_timepoint
+{
 	u16 seconds, minutes, hours, day_of_month, month, year;
 };
 
-class rtc : public device {
+class rtc : public device
+{
 public:
 	static device_class rtc_device_class;
 
-	rtc(device_class&dc, bus &owner)
+	rtc(device_class & dc, bus & owner)
 		: device(dc, owner)
 	{
 	}

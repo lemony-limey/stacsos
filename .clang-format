@@ -1,7 +1,29 @@
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseExpressionOnASingleLine: Always
+AllowShortEnumsOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortLambdasOnASingleLine: Always
+AllowShortLoopsOnASingleLine: Always
+AllowShortRecordOnASingleLine: Always
 BasedOnStyle: WebKit
+BraceWrapping:
+    AfterCaseLabel: true
+    AfterClass: false
+    AfterControlStatement: Always
+    AfterEnum: false
+    AfterFunction: true
+    AfterNamespace: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    BeforeWhile: true
+BreakBeforeBraces: Allman
+ColumnLimit: 160
+FixNamespaceComments: true
 IndentWidth: 4
+PointerAlignment: Right
 TabWidth: 4
 UseTab: Always
-ColumnLimit: 160
-PointerAlignment: Right
-FixNamespaceComments: true

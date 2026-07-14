@@ -102,7 +102,7 @@ struct thread_data {
 };
 #endif
 
-static void *mandelbrot(void *arg)
+static void* mandelbrot(void* arg)
 {
 #ifndef WORKLIST
 	thread_data *data = (thread_data *)arg;
@@ -149,7 +149,7 @@ static void *mandelbrot(void *arg)
 	return nullptr;
 }
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	fb = object::open("/dev/virtcon0");
 

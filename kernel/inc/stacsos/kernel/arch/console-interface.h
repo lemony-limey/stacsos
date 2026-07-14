@@ -7,31 +7,35 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch {
-class console_interface {
+namespace stacsos::kernel::arch
+{
+class console_interface
+{
 public:
 	console_interface()
 		: cur_attr_(0x07)
-	{
-	}
+	{}
 
 	virtual void write_char(unsigned char c, u8 attr) = 0;
 
-	void write(const char *text)
+	void write(const char* text)
 	{
-		while (*text) {
-			if (*text == '\e') {
+		while (*text)
+		{
+			if (*text == '\e')
+			{
 				text++;
 
-				switch (*text) {
-				case 0:
-					return;
-				case '0' ... '9':
-					cur_attr_ = *text - '0';
-					break;
-				case 'a' ... 'f':
-					cur_attr_ = (*text - 'a') + 0xa;
-					break;
+				switch (*text)
+				{
+					case 0:
+						return;
+					case '0' ... '9':
+						cur_attr_ = *text - '0';
+						break;
+					case 'a' ... 'f':
+						cur_attr_ = (*text - 'a') + 0xa;
+						break;
 				}
 
 				text++;
@@ -41,7 +45,7 @@ public:
 		}
 	}
 
-	void write_line(const char *text)
+	void write_line(const char* text)
 	{
 		write(text);
 		write_char('\n', 0);

@@ -9,11 +9,13 @@
 
 #include <stacsos/kernel/arch/x86/page-table-structures.h>
 
-namespace stacsos::kernel::mem {
+namespace stacsos::kernel::mem
+{
 class page_table_allocator;
 }
 
-namespace stacsos::kernel::arch::x86 {
+namespace stacsos::kernel::arch::x86
+{
 enum class mapping_size { m4k, m2m, m1g };
 enum class mapping_flags { none, present = 1, writable = 2, user_accessable = 4, write_through = 8, cache_disabled = 16 };
 
@@ -21,12 +23,14 @@ DEFINE_ENUM_FLAG_OPERATIONS(mapping_flags)
 
 enum class mapping_result { ok, unmapped };
 
-struct mapping {
+struct mapping
+{
 	mapping_result result;
 	u64 address;
 };
 
-class x86_page_table {
+class x86_page_table
+{
 public:
 	/**
 	 * @brief Creates a new, empty, X86 page table, and returns a pointer to the newly created object.
@@ -34,7 +38,7 @@ public:
 	 * @param pta The allocator to use for allocating page tables.
 	 * @return x86_page_table* The newly created page table.
 	 */
-	static x86_page_table *create_empty(mem::page_table_allocator &pta);
+	static x86_page_table* create_empty(mem::page_table_allocator & pta);
 
 	/**
 	 * @brief Creates a new x86 page table, with all top-level (i.e. pml4) entries as copies of the
@@ -43,14 +47,14 @@ public:
 	 * @param pta The allocator to use for allocating page tables.
 	 * @return x86_page_table* THe newly created page table.
 	 */
-	x86_page_table *create_linked_copy(mem::page_table_allocator &pta);
+	x86_page_table* create_linked_copy(mem::page_table_allocator & pta);
 
 	/**
 	 * @brief Retrieves a pointer to the current X86 page table.
 	 *
 	 * @return x86_page_table*
 	 */
-	static x86_page_table *current()
+	static x86_page_table* current()
 	{
 		u64 cr3val;
 		asm volatile("mov %%cr3, %0" : "=r"(cr3val));
@@ -86,7 +90,7 @@ public:
 	 * @param flags The flags (i.e. permissions, etc) to use for the mapping.
 	 * @param size The granularity of the mapping.
 	 */
-	void map(mem::page_table_allocator &pta, u64 virtual_address, u64 physical_address, mapping_flags flags, mapping_size size = mapping_size::m4k);
+	void map(mem::page_table_allocator & pta, u64 virtual_address, u64 physical_address, mapping_flags flags, mapping_size size = mapping_size::m4k);
 
 	/**
 	 * @brief Removes the mapping for a virtual address from the page table.
@@ -94,7 +98,7 @@ public:
 	 * @param pta The allocator to use for allocating page tables.
 	 * @param virtual_address The virtual address to remove from the mapping.
 	 */
-	void unmap(mem::page_table_allocator &pta, u64 virtual_address);
+	void unmap(mem::page_table_allocator & pta, u64 virtual_address);
 
 	/**
 	 * @brief Looks up an existing mapping (if it exists) and returns details about it.

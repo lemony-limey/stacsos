@@ -147,14 +147,15 @@ static inline void __relax() { asm volatile("pause"); }
 
 #ifndef __i386__
 /* Placement new operator */
-inline void *operator new(size_t size, void *p) { return p; }
+inline void* operator new(size_t size, void* p) { return p; }
 #endif
 
 /* Global functions */
 static inline __noreturn void abort()
 {
 	asm volatile("cli");
-	for (;;) {
+	for (;;)
+	{
 		asm volatile("hlt");
 	}
 	__unreachable();
@@ -162,19 +163,21 @@ static inline __noreturn void abort()
 
 static inline __noreturn void hang_loop()
 {
-	for (;;) {
+	for (;;)
+	{
 		__relax();
 	}
 	__unreachable();
 }
 
-extern __noreturn void panic(const char *fmt, ...);
-extern __noreturn void panic_with_ctx(const void *mctx, const char *fmt, ...);
+extern __noreturn void panic(const char* fmt, ...);
+extern __noreturn void panic_with_ctx(const void *mctx, const char* fmt, ...);
 
 /* Assertions */
-static inline void __assert(bool cond, const char *str)
+static inline void __assert(bool cond, const char* str)
 {
-	if (!cond) {
+	if (!cond)
+	{
 		panic("ASSERTION FAILED: %s", str);
 		__unreachable();
 	}

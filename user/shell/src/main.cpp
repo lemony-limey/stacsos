@@ -12,7 +12,7 @@
 
 using namespace stacsos;
 
-static void run_command(const char *cmd)
+static void run_command(const char* cmd)
 {
 	string binary_name;
 	while (*cmd && *cmd != ' ') {

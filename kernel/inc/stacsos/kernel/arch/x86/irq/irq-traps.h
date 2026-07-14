@@ -11,7 +11,8 @@ typedef void (*irq_trap_fn_type)(void);
 
 #define DECLARE_IRQ_TRAP(__nr) extern void x86_irq_trap_##__nr(void);
 
-extern "C" {
+extern "C"
+{
 DECLARE_IRQ_TRAP(0);
 DECLARE_IRQ_TRAP(1);
 DECLARE_IRQ_TRAP(2);

@@ -9,8 +9,10 @@
 
 #include <stacsos/kernel/arch/console-interface.h>
 
-namespace stacsos::kernel::arch::x86 {
-class text_console : public console_interface {
+namespace stacsos::kernel::arch::x86
+{
+class text_console : public console_interface
+{
 public:
 	static const int rows = 25;
 	static const int cols = 80;
@@ -29,7 +31,7 @@ public:
 	virtual void write_char(unsigned char c, u8 attr) override;
 
 private:
-	u16 *vram_;
+	u16* vram_;
 	int x_, y_;
 
 	void enable_cursor();

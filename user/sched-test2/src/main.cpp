@@ -11,7 +11,7 @@
 
 using namespace stacsos;
 
-static void *thread_proc(void *arg)
+static void* thread_proc(void* arg)
 {
 	unsigned int thread_num = (unsigned int)(unsigned long)arg;
 
@@ -24,7 +24,7 @@ static void *thread_proc(void *arg)
 	return nullptr;
 }
 
-int main(const char *cmdline)
+int main(const char* cmdline)
 {
 	console::get().write("Running Scheduler Test 2...\n");
 

@@ -7,9 +7,11 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
+namespace stacsos::kernel::arch::x86
+{
 
-enum class cr0_flags : unsigned long {
+enum class cr0_flags : unsigned long
+{
 	protected_mode_enable = 1u << 0,
 	monitor_coprocessor = 1u << 1,
 	emulation = 1u << 2,
@@ -25,7 +27,8 @@ enum class cr0_flags : unsigned long {
 
 DEFINE_ENUM_FLAG_OPERATIONS(cr0_flags)
 
-class cr0 {
+class cr0
+{
 public:
 	static cr0_flags read()
 	{
@@ -38,7 +41,8 @@ public:
 	static void write(cr0_flags flags) { asm volatile("mov %0, %%cr0" ::"r"((unsigned long)flags)); }
 };
 
-class cr2 {
+class cr2
+{
 public:
 	static unsigned long read()
 	{
@@ -49,7 +53,8 @@ public:
 	}
 };
 
-class cr3 {
+class cr3
+{
 public:
 	static unsigned long read()
 	{
@@ -62,7 +67,8 @@ public:
 	static void write(unsigned long value) { asm volatile("mov %0, %%cr3" ::"r"(value)); }
 };
 
-enum class cr4_flags : unsigned long {
+enum class cr4_flags : unsigned long
+{
 	VME = (1u << 0),
 	PVI = (1u << 1),
 	TSD = (1u << 2),
@@ -88,7 +94,8 @@ enum class cr4_flags : unsigned long {
 
 DEFINE_ENUM_FLAG_OPERATIONS(cr4_flags)
 
-class cr4 {
+class cr4
+{
 public:
 	static cr4_flags read()
 	{
@@ -101,7 +108,8 @@ public:
 	static void write(cr4_flags flags) { asm volatile("mov %0, %%cr4" ::"r"((unsigned long)flags)); }
 };
 
-class fsbase {
+class fsbase
+{
 public:
 #ifdef USE_FSGSBASE
 	static u64 read()
@@ -131,7 +139,8 @@ public:
 #endif
 };
 
-class gsbase {
+class gsbase
+{
 public:
 #ifdef USE_FSGSBASE
 	static u64 read()

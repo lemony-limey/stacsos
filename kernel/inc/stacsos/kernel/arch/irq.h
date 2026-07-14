@@ -7,10 +7,12 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch {
-class irq {
+namespace stacsos::kernel::arch
+{
+class irq
+{
 public:
 	using irq_handler_fn = void (*)(void *);
-	void attach(irq_handler_fn handler, void *arg);
+	void attach(irq_handler_fn handler, void* arg);
 };
 } // namespace stacsos::kernel::arch

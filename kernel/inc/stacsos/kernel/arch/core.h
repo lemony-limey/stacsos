@@ -18,7 +18,8 @@
 #include <stacsos/kernel/sched/schedulable-entity.h>
 #include <stacsos/list.h>
 
-namespace stacsos::kernel::arch {
+namespace stacsos::kernel::arch
+{
 using namespace stacsos::kernel::sched;
 
 class timer;
@@ -26,13 +27,14 @@ class core_manager;
 
 enum class core_status { offline, online, error, bootstrap };
 
-class core {
+class core
+{
 	friend class core_manager;
 
 public:
 	static int this_core_id() { return (int)x86::msrs::ia32_tsc_aux; }
 
-	static core &this_core();
+	static core & this_core();
 
 	explicit core(int id)
 		: id_(id)
@@ -47,7 +49,7 @@ public:
 
 		//*new alg::simple_fair_scheduler()
 
-		const char *sched_alg_name = config::get().get_option("sched");
+		const char* sched_alg_name = config::get().get_option("sched");
 		if (!sched_alg_name || *sched_alg_name == 0) {
 			sched_alg_name = "sfs";
 		}
@@ -70,9 +72,9 @@ public:
 	virtual bool remote_run() = 0;
 	__noreturn void run();
 
-	virtual timer &local_timer() = 0;
+	virtual timer & local_timer() = 0;
 
-	void add_to_runqueue(tcb &tcb)
+	void add_to_runqueue(tcb & tcb)
 	{
 		u64 flags;
 
@@ -82,7 +84,7 @@ public:
 		rq_lock_.unlock(flags);
 	}
 
-	void remove_from_runqueue(tcb &tcb)
+	void remove_from_runqueue(tcb & tcb)
 	{
 		u64 flags;
 
@@ -94,13 +96,13 @@ public:
 
 	void schedule();
 
-	virtual void set_current_tcb(const tcb *tcb) = 0;
-	virtual tcb *get_current_tcb() = 0;
+	virtual void set_current_tcb(const tcb* tcb) = 0;
+	virtual tcb* get_current_tcb() = 0;
 
 	core_status status() const { return status_; }
 
-	irq_manager &irqs() { return irqs_; }
-	const irq_manager &irqs() const { return irqs_; }
+	irq_manager & irqs() { return irqs_; }
+	const irq_manager & irqs() const { return irqs_; }
 
 	void update_clock();
 

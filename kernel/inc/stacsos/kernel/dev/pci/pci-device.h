@@ -11,17 +11,20 @@
 #include <stacsos/kernel/dev/device.h>
 #include <stacsos/kernel/dev/pci/pci-device-config.h>
 
-namespace stacsos::kernel::dev::pci {
+namespace stacsos::kernel::dev::pci
+{
 class pci_bus;
 
-struct pci_capability {
+struct pci_capability
+{
 	u8 offset, vendor;
 } __packed;
 
-struct pci_capabilities_iterator {
+struct pci_capabilities_iterator
+{
 	typedef pci_capabilities_iterator self;
 
-	pci_capabilities_iterator(pci_device_configuration &config, int offset)
+	pci_capabilities_iterator(pci_device_configuration & config, int offset)
 		: config_(config)
 		, offset_(offset)
 		, next_(-1)
@@ -34,7 +37,7 @@ struct pci_capabilities_iterator {
 	bool operator==(const self &other) { return other.offset_ == offset_; }
 	bool operator!=(const self &other) { return other.offset_ != offset_; }
 
-	self &operator++()
+	self & operator++()
 	{
 		offset_ = next_;
 		if (offset_ == 0) {
@@ -47,7 +50,7 @@ struct pci_capabilities_iterator {
 	}
 
 private:
-	pci_device_configuration &config_;
+	pci_device_configuration & config_;
 	unsigned int offset_, next_;
 	pci_capability header_;
 
@@ -81,22 +84,23 @@ private:
 	pci_device_configuration &config_;
 };
 
-class pci_device : public device {
+class pci_device : public device
+{
 public:
 	static device_class pci_device_class;
 
-	pci_device(bus &owner, pci_device_configuration &config);
+	pci_device(bus & owner, pci_device_configuration & config);
 	virtual ~pci_device();
 
 	virtual void configure() override;
 
 	pci_capabilities_iterable capabilities() { return pci_capabilities_iterable(config_); }
 
-	pci_device_configuration &config() const { return config_; }
+	pci_device_configuration & config() const { return config_; }
 
-	void register_msi(arch::x86::irq::irq_handler_fn handler, void *arg);
+	void register_msi(arch::x86::irq::irq_handler_fn handler, void* arg);
 
 private:
-	pci_device_configuration &config_;
+	pci_device_configuration & config_;
 };
 } // namespace stacsos::kernel::dev::pci

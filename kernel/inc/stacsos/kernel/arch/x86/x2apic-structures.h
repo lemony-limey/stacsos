@@ -7,8 +7,10 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
-enum class x2apic_lvts {
+namespace stacsos::kernel::arch::x86
+{
+enum class x2apic_lvts
+{
 	timer,
 	pmu,
 	thermal,
@@ -23,14 +25,16 @@ enum class icr_level : u64 { deassert = 0, assert = 1 };
 enum class icr_trigger_mode : u64 { edge = 0, level = 1 };
 enum class icr_dest_shorthand : u64 { none = 0, self = 1, all_including_self = 2, all_excluding_self = 3 };
 
-struct x2apic_icr {
+struct x2apic_icr
+{
 	x2apic_icr()
 		: bits(0)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			// LO
 			u64 vector : 8;
 			icr_delivery_mode delivery_mode : 3;

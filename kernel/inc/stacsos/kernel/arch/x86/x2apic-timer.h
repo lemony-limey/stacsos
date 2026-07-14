@@ -10,9 +10,10 @@
 #include <stacsos/kernel/arch/timer.h>
 #include <stacsos/kernel/arch/x86/x2apic.h>
 
-namespace stacsos::kernel::arch::x86 {
-
-class x2apic_timer : public timer {
+namespace stacsos::kernel::arch::x86
+{
+class x2apic_timer : public timer
+{
 public:
 	x2apic_timer(x2apic &lapic)
 		: lapic_(lapic)
@@ -35,7 +36,7 @@ public:
 	virtual void stop() { lapic_.mask_interrupts(x2apic_lvts::timer); }
 
 private:
-	static void timer_irq_handler(u8 irq, void *context, void *arg);
-	x2apic &lapic_;
+	static void timer_irq_handler(u8 irq, void* context, void* arg);
+	x2apic & lapic_;
 };
 } // namespace stacsos::kernel::arch::x86

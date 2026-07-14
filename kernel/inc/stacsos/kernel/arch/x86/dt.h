@@ -7,16 +7,19 @@
  */
 #pragma once
 
-namespace stacsos::kernel::arch::x86 {
+namespace stacsos::kernel::arch::x86
+{
 
-enum class descriptor_privilege_level {
+enum class descriptor_privilege_level
+{
 	ring0 = 0,
 	ring1 = 1,
 	ring2 = 2,
 	ring3 = 3,
 };
 
-struct data_segment_descriptor {
+struct data_segment_descriptor
+{
 	data_segment_descriptor(descriptor_privilege_level dpl)
 		: limit_low(0)
 		, base_low(0)
@@ -34,13 +37,14 @@ struct data_segment_descriptor {
 		, B(1)
 		, G(0)
 		, base_high(0)
-	{
-	}
+	{}
 
-	union {
+	union
+	{
 		u64 bits;
 
-		struct {
+		struct
+		{
 			u16 limit_low;
 			u16 base_low;
 			u8 base_middle;
@@ -67,7 +71,8 @@ struct data_segment_descriptor {
 	};
 } __packed;
 
-struct code_segment_descriptor {
+struct code_segment_descriptor
+{
 
 	code_segment_descriptor(descriptor_privilege_level dpl)
 		: ra_0_1(0)
@@ -85,13 +90,14 @@ struct code_segment_descriptor {
 		, D(0)
 		, G(0)
 		, ra_0_6(0)
-	{
-	}
+	{}
 
-	union {
+	union
+	{
 		u64 bits;
 
-		struct {
+		struct
+		{
 			u32 ra_0_1;
 			u8 ra_0_2;
 
@@ -117,7 +123,8 @@ struct code_segment_descriptor {
 	};
 } __packed;
 
-struct call_gate_descriptor {
+struct call_gate_descriptor
+{
 
 	call_gate_descriptor(u16 target_segment, descriptor_privilege_level dpl, u64 target)
 		: offset_low(target & 0xffff)
@@ -129,15 +136,17 @@ struct call_gate_descriptor {
 		, offset_high((target >> 16) & 0xffff)
 		, offset_extra_high((target >> 32) & 0xffffffff)
 		, none(0)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			u64 bits_low, bits_high;
 		} __packed;
 
-		struct {
+		struct
+		{
 			u16 offset_low;
 			u16 segment_selector;
 			u8 reserved;
@@ -151,9 +160,9 @@ struct call_gate_descriptor {
 	};
 } __packed;
 
-struct tss_descriptor {
-
-	tss_descriptor(void *ptr, size_t size)
+struct tss_descriptor
+{
+	tss_descriptor(void* ptr, size_t size)
 		: limit_low((size & 0xffff))
 		, base_low(((uintptr_t)ptr) & 0xffff)
 		, base_middle((((uintptr_t)ptr) >> 16) & 0xff)
@@ -168,15 +177,17 @@ struct tss_descriptor {
 		, G(0)
 		, base_high((((uintptr_t)ptr) >> 24) & 0xff)
 		, base_xhigh(((uintptr_t)ptr) >> 32)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			u64 bits_low, bits_high;
 		} __packed;
 
-		struct {
+		struct
+		{
 			u16 limit_low;
 			u16 base_low;
 			u8 base_middle;
@@ -202,7 +213,8 @@ struct tss_descriptor {
 	};
 } __packed;
 
-struct interrupt_gate_descriptor {
+struct interrupt_gate_descriptor
+{
 
 	interrupt_gate_descriptor(uintptr_t offset, u16 seg, descriptor_privilege_level dpl)
 		: offset_low(offset & 0xffffu)
@@ -213,15 +225,17 @@ struct interrupt_gate_descriptor {
 		, P(1)
 		, offset_mid((offset >> 16) & 0xffffu)
 		, offset_high((offset >> 32) & 0xffffffffu)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			u64 bits_low, bits_high;
 		} __packed;
 
-		struct {
+		struct
+		{
 			u16 offset_low;
 			u16 segment_selector;
 			u8 ist : 3;
@@ -235,8 +249,8 @@ struct interrupt_gate_descriptor {
 	};
 } __packed;
 
-struct trap_gate_descriptor {
-
+struct trap_gate_descriptor
+{
 	trap_gate_descriptor(uintptr_t offset, u16 seg, descriptor_privilege_level dpl)
 		: offset_low(offset & 0xffffu)
 		, segment_selector(seg)
@@ -246,15 +260,17 @@ struct trap_gate_descriptor {
 		, P(1)
 		, offset_mid((offset >> 16) & 0xffffu)
 		, offset_high((offset >> 32) & 0xffffffffu)
-	{
-	}
+	{}
 
-	union {
-		struct {
+	union
+	{
+		struct
+		{
 			u64 bits_low, bits_high;
 		} __packed;
 
-		struct {
+		struct
+		{
 			u16 offset_low;
 			u16 segment_selector;
 			u8 ist : 2;
@@ -268,24 +284,26 @@ struct trap_gate_descriptor {
 	};
 } __packed;
 
-struct gdt_pointer {
+struct gdt_pointer
+{
 	u16 length;
 	const void *ptr;
 } __packed;
 
-struct idt_pointer {
+struct idt_pointer
+{
 	u16 length;
 	const void *ptr;
 } __packed;
 
 class x86_core;
 
-class descriptor_table {
+class descriptor_table
+{
 public:
 	descriptor_table(x86_core &owner)
 		: owner_(owner)
-	{
-	}
+	{}
 
 	virtual void reload() = 0;
 
@@ -297,7 +315,8 @@ private:
 
 class task_state_segment;
 
-template <int MAX_NR_GDT_ENTRIES> class global_descriptor_table : public descriptor_table {
+template <int MAX_NR_GDT_ENTRIES> class global_descriptor_table : public descriptor_table
+{
 public:
 	global_descriptor_table(x86_core &owner);
 
@@ -306,18 +325,19 @@ public:
 	bool add_null();
 	bool add_code_segment(descriptor_privilege_level dpl);
 	bool add_data_segment(descriptor_privilege_level dpl);
-	bool add_tss(task_state_segment &tss);
+	bool add_tss(task_state_segment & tss);
 
 	bool add_call_gate(u16 target_segment, descriptor_privilege_level dpl, u64 target);
 
-	void *ptr() const { return (void *)&gdt_[0]; }
+	void* ptr() const { return (void*)&gdt_[0]; }
 
 private:
 	u8 current_;
 	u64 __aligned(16) gdt_[MAX_NR_GDT_ENTRIES];
 };
 
-template <int MAX_NR_IDT_ENTRIES> class interrupt_descriptor_table : public descriptor_table {
+template <int MAX_NR_IDT_ENTRIES> class interrupt_descriptor_table : public descriptor_table
+{
 public:
 	static constexpr int NR_ENTRIES = MAX_NR_IDT_ENTRIES;
 
@@ -328,29 +348,31 @@ public:
 	bool register_interrupt_gate(int index, uintptr_t addr, u16 seg, descriptor_privilege_level dpl);
 	bool register_trap_gate(int index, uintptr_t addr, u16 seg, descriptor_privilege_level dpl);
 
-	void *ptr() const { return (void *)&idt_[0]; }
+	void* ptr() const { return (void*)&idt_[0]; }
 
 private:
 	void initialise_exception_vectors();
 
 	u8 max_index_;
 
-	struct {
+	struct
+	{
 		u64 low, high;
 	} __packed __aligned(16) idt_[MAX_NR_IDT_ENTRIES];
 };
 
-class task_state_segment {
+class task_state_segment
+{
 	friend class global_descriptor_table<16>;
 
 public:
-	task_state_segment(x86_core &owner);
+	task_state_segment(x86_core & owner);
 
 	void reload(u16 sel);
 
 	void set_kernel_stack(uintptr_t stack);
 
-	void *ptr() const { return (void *)&tss_[0]; }
+	void* ptr() const { return (void*)&tss_[0]; }
 
 private:
 	x86_core &owner_;

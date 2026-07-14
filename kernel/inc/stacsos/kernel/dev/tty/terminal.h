@@ -10,14 +10,18 @@
 #include <stacsos/kernel/arch/console-interface.h>
 #include <stacsos/kernel/dev/device.h>
 
-namespace stacsos::kernel::dev::console {
+namespace stacsos::kernel::dev::console
+{
 class virtual_console;
 }
 
-namespace stacsos::kernel::dev::tty {
-class terminal : public device, public arch::console_interface {
+namespace stacsos::kernel::dev::tty 
+{
+class terminal : public device, public arch::console_interface
+{
 public:
 	static device_class terminal_device_class;
+
 	terminal(bus &owner)
 		: device(terminal_device_class, owner)
 		, current_attr_(0x07)

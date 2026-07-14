@@ -14,8 +14,10 @@
 #define USER_DATA_SEGMENT_SELECTOR 0x18
 #define TSS_SEGMENT_SELECTOR 0x28
 
-namespace stacsos::kernel::arch::x86 {
-struct machine_context {
+namespace stacsos::kernel::arch::x86
+{
+struct machine_context
+{
 	u64 gs, fs;
 	u64 r15, r14, r13, r12, r11, r10, r9, r8;
 	u64 rdi, rsi, rbp, rbx, rdx, rcx, rax;

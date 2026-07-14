@@ -79,7 +79,8 @@ public:
 	avl_tree_iterator(node_type *start)
 		: cur_(nullptr)
 	{
-		if (start) {
+		if (start) 
+		{
 			enqueue(start);
 			advance();
 		}
@@ -99,19 +100,21 @@ private:
 
 	void enqueue(node_type *n)
 	{
-		if (n) {
-			queue_.enqueue(n);
-		}
+		// Double-check that n is not nullptr
+		if (n) { queue_.enqueue(n); }
 	}
 
 	void advance()
 	{
-		if (!queue_.empty()) {
+		if (!queue_.empty())
+		{
 			cur_ = queue_.dequeue();
 
 			enqueue(cur_->left());
 			enqueue(cur_->right());
-		} else {
+		} 
+		else  // Internal queue is empty
+		{
 			cur_ = nullptr;
 		}
 	}
@@ -131,20 +134,34 @@ public:
 
 	void add(const K &key, const D &data) { root_ = do_insert(root_, key, data); }
 
+	/// @brief Searches for the given `key` in the AVL tree and, if it exists, writes the
+	///  pointer to the associated value to `data`.
+	/// @param key The key to search for in the AVL tree.
+	/// @param data The location to copy the pointer to the data to, if applicable.
+	/// @return `true` if `key` exists as a key in the map, `false` if it does not.
 	bool try_get_value(const K &key, D &data)
 	{
 		node *ref = root_;
-		while (ref) {
-			if (ref->key() == key) {
+		while (ref)
+		{
+			// Recursively traverse the child nodes to find the key.
+			// Lookups take O(log n) time, where n is the depth of the tree.
+			if (ref->key() == key)
+			{
 				data = ref->data();
 				return true;
-			} else if (key < ref->key()) {
+			} 
+			else if (key < ref->key()) 
+			{
 				ref = ref->left();
-			} else {
+			} 
+			else 
+			{
 				ref = ref->right();
 			}
 		}
 
+		// The key was not found.
 		return false;
 	}
 
