@@ -32,9 +32,9 @@ void keyboard::configure()
 	x86_platform::get().get_ioapic()->allocate_physical_irq(1, (x86_core &)core_manager::get().get_boot_core(), keyboard_irq_handler, this);
 }
 
-void keyboard::keyboard_irq_handler(u8 irq, void *ctx, void *arg)
+void keyboard::keyboard_irq_handler(u8 irq, void* ctx, void* arg)
 {
-	keyboard *device = (keyboard *)arg;
+	keyboard* device = (keyboard*)arg;
 
 	u8 key_event_data = ioports::keyboard_controller::read8();
 

@@ -24,6 +24,6 @@ public:
 	irq* request_irq();
 
 private:
-	core &core_;
+	core & core_;
 };
 } // namespace stacsos::kernel::arch

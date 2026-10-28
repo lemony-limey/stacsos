@@ -15,7 +15,7 @@ namespace stacsos::kernel::arch::x86
 class x2apic_timer : public timer
 {
 public:
-	x2apic_timer(x2apic &lapic)
+	x2apic_timer(x2apic & lapic)
 		: lapic_(lapic)
 	{
 	}
@@ -24,15 +24,19 @@ public:
 
 	virtual void init() override;
 
+	// Start timer with given frequency.
 	virtual void start(u64 frequency)
 	{
+		// Periodic as opposed to one-shot.
 		lapic_.set_timer_periodic();
+		// Set the Divide Configuration Register MSR.
 		lapic_.set_timer_divide(3);
 		lapic_.set_timer_initial_count((lapic_.get_timer_frequency() >> 4) / frequency);
 
 		lapic_.unmask_interrupts(x2apic_lvts::timer);
 	}
 
+	// By masking timer interrupts, none will be delivered.
 	virtual void stop() { lapic_.mask_interrupts(x2apic_lvts::timer); }
 
 private:

@@ -23,7 +23,7 @@ using namespace stacsos::kernel;
 
 core &core::this_core()
 {
-	auto &c = core_manager::get().get_core(core::this_core_id());
+	auto & c = core_manager::get().get_core(core::this_core_id());
 	assert(&c != nullptr);
 
 	return c;
@@ -42,12 +42,13 @@ void core::run()
 {
 	// This routine MUST be called from the same core, i.e. the core that is executing must call the run for
 	// the core object that represents it.
-	if (core::this_core_id() != id()) {
+	if (core::this_core_id() != id())
+	{
 		panic("run must be called on executing core");
 	}
 
 	// Initialise the IDLE thread, for doing nothing when there are no tasks to run.
-	void *idle_thread_stack = memory_manager::get().pgalloc().allocate_pages(0, page_allocation_flags::zero).to_page().base_address_ptr();
+	void* idle_thread_stack = memory_manager::get().pgalloc().allocate_pages(0, page_allocation_flags::zero).to_page().base_address_ptr();
 
 	idle_thread_.mcontext = (machine_context *)idle_thread_stack;
 	idle_thread_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;
@@ -69,12 +70,14 @@ void core::run()
 	__unreachable();
 }
 
+/// @brief Schedule a new task. This is called during preemptive multitasking.
 void core::schedule()
 {
-	tcb *current = get_current_tcb();
+	tcb* current = get_current_tcb();
 	u64 now = __builtin_ia32_rdtsc();
 
-	if (current) {
+	if (current)
+	{
 		// Update the current task's runtime.
 		u64 delta = now - current->start_time;
 		current->run_time += delta;
@@ -82,8 +85,9 @@ void core::schedule()
 
 	// Select the next task for execution
 	// TODO: Check task quantum expiry
-	tcb *next = sched_alg_->select_next_task(current);
-	if (!next) {
+	tcb* next = sched_alg_->select_next_task(current);
+	if (!next)
+	{
 		next = &idle_thread_;
 	}
 

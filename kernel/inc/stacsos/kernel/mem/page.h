@@ -17,7 +17,8 @@ class memory_manager;
 class page_allocator_buddy;
 class page_allocator_linear;
 
-class page {
+class page
+{
 	friend class memory_manager;
 
 public:

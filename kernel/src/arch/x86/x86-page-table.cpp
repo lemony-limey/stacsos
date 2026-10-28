@@ -22,13 +22,13 @@ static u64 l1_pg_off(u64 address) { return address & 0xfff; } // 4K
 static u64 l2_pg_off(u64 address) { return address & 0x1fffff; } // 2M
 static u64 l3_pg_off(u64 address) { return address & 0x3fffffff; } // 1G
 
-x86_page_table *x86_page_table::create_empty(page_table_allocator &pta)
+x86_page_table* x86_page_table::create_empty(page_table_allocator & pta)
 {
 	page &pml4 = pta.allocate();
 	return (x86_page_table *)pml4.base_address_ptr();
 }
 
-x86_page_table *x86_page_table::create_linked_copy(page_table_allocator &pta)
+x86_page_table* x86_page_table::create_linked_copy(page_table_allocator & pta)
 {
 	page &pml4 = pta.allocate();
 
@@ -87,7 +87,7 @@ void x86_page_table::map(page_table_allocator &pta, u64 virtual_address, u64 phy
 		}
 	}
 
-	pde &l2 = (*(pd *)page::get_from_base_address(l3.base_address()).base_address_ptr())[pd_index(virtual_address)];
+	pde & l2 = (*(pd *)page::get_from_base_address(l3.base_address()).base_address_ptr())[pd_index(virtual_address)];
 	if (size == mapping_size::m2m) {
 		if (l2.present() && !l2.size()) {
 			panic("overlapping mapping");
@@ -115,7 +115,7 @@ void x86_page_table::map(page_table_allocator &pta, u64 virtual_address, u64 phy
 		}
 	}
 
-	pte &l1 = (*(pt *)page::get_from_base_address(l2.base_address()).base_address_ptr())[pt_index(virtual_address)];
+	pte & l1 = (*(pt *)page::get_from_base_address(l2.base_address()).base_address_ptr())[pt_index(virtual_address)];
 	l1.reset();
 	l1.base_address(physical_address);
 	l1.present(true);

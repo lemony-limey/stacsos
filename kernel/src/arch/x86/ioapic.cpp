@@ -19,37 +19,49 @@ using namespace stacsos;
 
 void ioapic::initialise()
 {
+	// ioapic::read(<register_number>: u32) -> u32
 	u32 ver = read(IOAPIC_VER);
+	// get the 3rd & 4th bytes?
 	nr_irqs_ = (u8)(ver >> 16);
 
 	dprintf("ioapic id=%u, ver=%u, nr-irqs=%u\n", read(IOAPIC_ID), ver & 0xff, nr_irqs_);
 
+	// Redirection entry tells us which lapic (i.e., CPU core) the interrupt should be
+	// routed to.
 	redirection_entry blank;
 	memops::bzero(&blank, sizeof(blank));
 
-	for (unsigned int i = 0; i < nr_irqs_; i++) {
+	for (unsigned int i = 0; i < nr_irqs_; i++)
+	{
 		store_redir_entry(i, blank);
 	}
 }
 
-void ioapic::store_redir_entry(u8 irq_index, const redirection_entry &e)
+void ioapic::store_redir_entry(u8 irq_index, const redirection_entry & e)
 {
-	if (irq_index >= nr_irqs_) {
-		panic("argument out of range");
-	}
+	if (irq_index >= nr_irqs_) { panic("argument out of range"); }
 
 	u8 configuration_register = 0x10 + (irq_index * 2);
 	write(configuration_register, e.low);
 	write(configuration_register + 1, e.high);
 }
 
-void ioapic::allocate_physical_irq(u32 phys_irq_nr, x86_core &target_core, irq_handler_fn handler_fn, void *handler_fn_arg)
+/// @brief Allocates a handler function for a given IRQ for a given core.
+/// @param phys_irq_nr 
+/// @param target_core 
+/// @param handler_fn 
+/// @param handler_fn_arg 
+void ioapic::allocate_physical_irq(u32 phys_irq_nr, x86_core & target_core, irq_handler_fn handler_fn, void* handler_fn_arg)
 {
 	u8 allocated_irq = target_core.irqmgr().allocate_irq(handler_fn, handler_fn_arg);
 	map_physical_irq(phys_irq_nr, target_core, allocated_irq);
 }
 
-void ioapic::map_physical_irq(u32 phys_irq_nr, x86_core &target_core, u8 target_irq_nr)
+/// @brief 
+/// @param phys_irq_nr 
+/// @param target_core 
+/// @param target_irq_nr 
+void ioapic::map_physical_irq(u32 phys_irq_nr, x86_core & target_core, u8 target_irq_nr)
 {
 	if (phys_irq_nr >= nr_irqs_) {
 		panic("argument out of range");

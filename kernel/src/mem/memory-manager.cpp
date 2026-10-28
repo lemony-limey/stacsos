@@ -18,25 +18,33 @@ extern "C" const char *_IMAGE_END;
 using namespace stacsos::kernel;
 using namespace stacsos::kernel::mem;
 
-struct memory_block {
+// Represents the base address of a block and its length, as well as if its frames are available for use or not.
+// This is just like what is provided by the bootloader crate.
+struct memory_block
+{
 	u64 start, length;
 	bool avail;
 };
 
+// Is this the free list?
 static memory_block memory_blocks[16];
 static int nr_memory_blocks;
 
+// 0x1000 is 4096, which is the number of bytes in a page.
+// All bytes in a page are usable, and metadata like permissions etc are stored in the page table.
 static char page_allocator_structure[0x1000];
 
 void memory_manager::init()
 {
 	dprintf("mem: init\n");
 
-	const char *pgalloc_algorithm_name = config::get().get_option_or_default("pgalloc", "linear");
+	// Determine the allocator to use. Linear by default, unless buddy is specified as a command-line option.
+	const char* pgalloc_algorithm_name = config::get().get_option_or_default("pgalloc", "linear");
 	dprintf("\e\x04mem: *** using the '%s' page allocator\e\x07\n", pgalloc_algorithm_name);
 
-	void *page_allocator_object = (void *)page_allocator_structure;
+	void* page_allocator_object = (void *)page_allocator_structure;
 	if (memops::strcmp(pgalloc_algorithm_name, "buddy") == 0) {
+		// In-place construction syntax
 		pgalloc_ = new (page_allocator_object) page_allocator_buddy(*this);
 	} else if (memops::strcmp(pgalloc_algorithm_name, "linear") == 0) {
 		pgalloc_ = new (page_allocator_object) page_allocator_linear(*this);
@@ -46,13 +54,15 @@ void memory_manager::init()
 
 	dprintf("memory:\n");
 	u64 last_addr = 0;
-	for (int i = 0; i < nr_memory_blocks; i++) {
-		const memory_block *mb = &memory_blocks[i];
+	for (int i = 0; i < nr_memory_blocks; i++)
+	{
+		const memory_block* mb = &memory_blocks[i];
 		dprintf("  %016lx -- %016lx (%S) %%c\n", memory_blocks[i].start, memory_blocks[i].start + memory_blocks[i].length, memory_blocks[i].length,
 			mb->avail ? 'A' : 'X');
 
 		u64 block_last_addr = mb->start + mb->length - 1;
-		if (block_last_addr > last_addr) {
+		if (block_last_addr > last_addr)
+		{
 			last_addr = block_last_addr;
 		}
 	}
@@ -70,6 +80,7 @@ void memory_manager::init()
 
 void memory_manager::add_memory_block(u64 start, u64 length, bool avail)
 {
+	// BUG: Potential for buffer overflow?
 	memory_blocks[nr_memory_blocks].start = start;
 	memory_blocks[nr_memory_blocks].length = length;
 	memory_blocks[nr_memory_blocks].avail = avail;
@@ -85,7 +96,8 @@ void memory_manager::initialise_page_descriptors(u64 nr_page_descriptors)
 	memops::bzero(page::get_pagearray(), sizeof(page) * nr_page_descriptors);
 }
 
-struct exclusion {
+struct exclusion
+{
 	u64 start, length;
 };
 
@@ -194,6 +206,7 @@ void memory_manager::activate_primary_mapping()
 	u64 phys_base = 0;
 
 	// TODO: Should do this up until the last physical memory block.
+	// TODO: What does 0xffff'8000'0000'0000
 	for (int i = 0; i < 12; i++) {
 		root_address_space_->pgtable().map(
 			ptalloc_, 0xffff'8000'0000'0000 + phys_base, phys_base, mapping_flags::present | mapping_flags::writable, mapping_size::m1g);

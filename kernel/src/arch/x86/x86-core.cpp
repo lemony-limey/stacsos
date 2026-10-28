@@ -32,6 +32,7 @@ void x86_core::init()
 	tsc_.calibrate();
 
 	// Initialise the Local APIC, and the Local APIC timer.
+	// The Local APIC is an x2APIC
 	lapic_.init();
 	timer_.init();
 
@@ -71,14 +72,19 @@ void x86_core::set_current_tcb(const stacsos::kernel::sched::tcb *tcb)
 	tss_.set_kernel_stack(tcb->kernel_stack);
 }
 
-stacsos::kernel::sched::tcb *x86_core::get_current_tcb() { return (stacsos::kernel::sched::tcb *)gsbase::read(); }
+stacsos::kernel::sched::tcb *x86_core::get_current_tcb() { return (stacsos::kernel::sched::tcb*)gsbase::read(); }
 
-static void yield_handler(u8 irq_nr, void *mcontext, void *arg)
+/// Is this how preemption is implemented?
+/// irq_nr - IRQ number, AKA index into the IDT
+/// mcontext - Machine Context, for a context switch
+/// arg - A pointer to the core in question?
+static void yield_handler(u8 irq_nr, void* mcontext, void* arg)
 {
-	x86_core *c = (x86_core *)arg;
+	x86_core* c = (x86_core*)arg;
 	c->schedule();
 }
 
+// Populate Descriptor Tables
 void x86_core::populate_dt()
 {
 	// Populate the GDT, with a NULL entry, then CODE and DATA segments for KERNEL and USER mode respectively.
@@ -99,6 +105,7 @@ void x86_core::populate_dt()
 
 	// The IRQ manager takes care of the IDT
 	irqs_.initialise();
+	// Interesting that 0xff is reserved for yield_handler instead of spurious vector.
 	irqs_.reserve_irq(0xff, yield_handler, this);
 
 	// The TSS is needed for swapping stacks if we're going into USER mode.
@@ -112,8 +119,8 @@ bool x86_core::remote_run() { return false; }
 struct mpstartup_data {
 	u64 mpready;
 	u64 mpcr3;
-	x86_core *core_obj;
-	void *mpstack;
+	x86_core* core_obj;
+	void* mpstack;
 	void (stacsos::kernel::arch::x86::x86_core::*trampoline)(void);
 } __packed;
 
@@ -122,7 +129,7 @@ extern "C" mpstartup_data _MPSTARTUP_DATA;
 
 bool x86_core::remote_run()
 {
-	auto &me = this_core();
+	auto & me = this_core();
 
 	pfn_t mpstart_pfn = prepare_mpstartup_code();
 
@@ -170,7 +177,7 @@ pfn_t x86_core::prepare_mpstartup_code()
 
 	// Copy the mp startup assembly into the right place.  Technically, we only need the 16-bit
 	// code, because once we jump into 32-bit mode, we're actually executing at normal addresses.
-	void *target_addr = (void *)(target_pfn << PAGE_BITS);
+	void* target_addr = (void *)(target_pfn << PAGE_BITS);
 	memops::memcpy(target_addr, (void *)&_MPSTARTUP_START, (size_t)&_MPSTARTUP_SIZE);
 
 	// We really need to remember to unmap page zero later...
@@ -190,7 +197,8 @@ void x86_core::complete_remote_init()
 }
 #endif
 
-void x86_core::handle_gpf(machine_context *mc)
+// Handle a General Protection Fault
+void x86_core::handle_gpf(machine_context* mc)
 {
 	dprintf("CORE %d - GENERAL PROTECTION FAULT\n", id());
 	mc->dump();
@@ -200,7 +208,8 @@ void x86_core::handle_gpf(machine_context *mc)
 	panic("General Protection Fault", mc);
 }
 
-void x86_core::handle_page_fault(machine_context *mc)
+// Handle a Page Fault
+void x86_core::handle_page_fault(machine_context* mc)
 {
 	if (memory_manager::get().try_handle_page_fault(cr2::read())) {
 		return;

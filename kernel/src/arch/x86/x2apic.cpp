@@ -20,8 +20,10 @@ using namespace stacsos::kernel::arch::x86;
 
 void x2apic::init()
 {
-	// Enable x2APIC mode
+	// Enable x2APIC mode by setting bit 10.
 	u64 apic_base_msr = msrs::ia32_apic_base;
+	// 0b0100_0000_0000
+	//  10^   ^7   ^3 ^0
 	apic_base_msr |= 0xc00;
 	msrs::ia32_apic_base = apic_base_msr;
 
@@ -36,7 +38,8 @@ void x2apic::init()
 	msrs::x2apic_lvt_error = MASKED;
 
 	// If the APIC version is >= 4, mask the PCINT interrupt source
-	if (((msrs::x2apic_lapic_ver >> 16) & 0xFF) >= 4) {
+	if (((msrs::x2apic_lapic_ver >> 16) & 0xFF) >= 4)
+	{
 		msrs::x2apic_lvt_perfmon = MASKED;
 	}
 
@@ -56,24 +59,27 @@ void x2apic::init()
 	msrs::x2apic_icr = i.bits;
 
 	// Wait for pending deliveries to complete
-	while (msrs::x2apic_icr & DELIVS) {
+	while (msrs::x2apic_icr & DELIVS)
+	{
 		asm volatile("");
 	}
 
+	// TPR = Task Priority Register.
 	msrs::x2apic_tpr = 0;
 
 	calibrate_timer();
 }
 
+// Calibrate the local APIC timer against the PIT.
 void x2apic::calibrate_timer()
 {
 	pit p;
 
 	// Initialise the APIC timer
-	set_timer_divide(3);
-	set_timer_initial_count(1);
-	set_timer_irq(32);
-	set_timer_one_shot();
+	set_timer_divide(3);         // Controls how fast timer interrupts occur.
+	set_timer_initial_count(1);  // Sets the countdown starting point.
+	set_timer_irq(32);           // Set the index in the IDT for timer interrupts.
+	set_timer_one_shot();        // Set the timer to oneshot mode.
 	unmask_interrupts(x2apic_lvts::timer);
 
 	dprintf("x2apic-timer: calibrate...\n");
@@ -94,9 +100,7 @@ void x2apic::calibrate_timer()
 	set_timer_initial_count(0xffffffffu);
 
 	// Spin until the PIT expires
-	while (!p.expired()) {
-		asm volatile("");
-	}
+	while (!p.expired()) { asm volatile(""); }
 
 	// Stop the APIC timer
 	mask_interrupts(x2apic_lvts::timer);

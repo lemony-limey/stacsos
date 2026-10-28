@@ -10,25 +10,29 @@
 #include <stacsos/kernel/arch/x86/machine-context.h>
 #include <stacsos/memops.h>
 
-namespace stacsos::kernel::arch {
+namespace stacsos::kernel::arch
+{
 class core;
 }
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class schedulable_entity;
 
-struct tcb {
-	schedulable_entity *entity; // 0
-	stacsos::kernel::arch::x86::machine_context *mcontext; // 8
-	u64 cr3; // 10
-	u64 kernel_stack; // 18
-	u64 user_stack_save; // 20
-	u64 start_time;	// 28
-	u64 stop_time;	// 30
-	u64 run_time;	// 38
+struct tcb 
+{
+	schedulable_entity* entity; // 0x0
+	stacsos::kernel::arch::x86::machine_context* mcontext; // 0x8
+	u64 cr3; // 0x10
+	u64 kernel_stack; // 0x18
+	u64 user_stack_save; // 0x20
+	u64 start_time;	// 0x28
+	u64 stop_time;	// 0x30
+	u64 run_time;	// 0x38
 } __packed;
 
-class schedulable_entity {
+class schedulable_entity
+{
 public:
 	schedulable_entity()
 		: owning_core_(nullptr)
@@ -36,11 +40,11 @@ public:
 		memops::bzero(&tcb_, sizeof(tcb_));
 	}
 
-	const tcb *get_tcb() const { return &tcb_; }
-	tcb *get_tcb() { return &tcb_; }
+	const tcb* get_tcb() const { return &tcb_; }
+	tcb* get_tcb() { return &tcb_; }
 
 private:
-	arch::core *owning_core_;
+	arch::core* owning_core_;
 
 protected:
 	__aligned(16) tcb tcb_;

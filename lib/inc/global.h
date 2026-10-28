@@ -96,6 +96,7 @@ typedef __gnuc_va_list va_list;
 	__class_typename(__class_typename &&) = delete;                                                                                                            \
 	__class_typename &operator=(__class_typename) = delete;
 
+// Define a static and its getter.
 #define DEFINE_SINGLETON(__class_typename)                                                                                                                     \
 private:                                                                                                                                                       \
 	DELETE_DEFAULT_COPY_AND_MOVE(__class_typename)                                                                                                             \

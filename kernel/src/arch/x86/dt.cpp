@@ -20,7 +20,7 @@ void descriptor_table::ensure_caller_is_owner()
 }
 
 template <int MAX_NR_GDT_ENTRIES>
-global_descriptor_table<MAX_NR_GDT_ENTRIES>::global_descriptor_table(x86_core &owner)
+global_descriptor_table<MAX_NR_GDT_ENTRIES>::global_descriptor_table(x86_core & owner)
 	: descriptor_table(owner)
 	, current_(0)
 {
@@ -226,7 +226,7 @@ bool interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::register_trap_gate(int inde
  * @param sel The selector of the TSS descriptor in the GDT.
  * @return Returns true if initialisation was successful, or false otherwise.
  */
-task_state_segment::task_state_segment(x86_core &owner)
+task_state_segment::task_state_segment(x86_core & owner)
 	: owner_(owner)
 {
 	memops::bzero(tss_, sizeof(tss_));

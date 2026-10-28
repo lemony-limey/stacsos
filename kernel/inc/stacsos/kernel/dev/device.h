@@ -38,7 +38,7 @@ public:
 	virtual shared_ptr<fs::file> open_as_file() { return nullptr; }
 
 private:
-	device_class& devclass_;
-	bus& bus_;
+	device_class & devclass_;
+	bus & bus_;
 };
 } // namespace stacsos::kernel::dev

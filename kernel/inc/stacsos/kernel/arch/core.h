@@ -112,7 +112,7 @@ private:
 	irq_manager irqs_;
 
 	tcb idle_thread_;
-	alg::scheduling_algorithm *sched_alg_;
+	alg::scheduling_algorithm* sched_alg_;
 
 	u64 clock_;
 	u64 last_clock_;

@@ -13,6 +13,7 @@ using namespace stacsos::kernel;
 using namespace stacsos::kernel::arch;
 using namespace stacsos::kernel::arch::x86;
 
+// Core manager keeps track of the available cores.
 void core_manager::init() { }
 
 void core_manager::go()

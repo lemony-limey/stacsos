@@ -17,6 +17,7 @@
 
 namespace stacsos::kernel::arch::x86
 {
+// x86 core is subclass of core.
 class x86_core : public core
 {
 public:
@@ -39,7 +40,7 @@ public:
 
 	virtual timer & local_timer() override { return timer_; }
 
-	tsc &local_tsc() { return tsc_; }
+	tsc & local_tsc() { return tsc_; }
 
 	irq::irq_manager<256> & irqmgr() { return irqs_; }
 	const irq::irq_manager<256> & irqmgr() const { return irqs_; }
@@ -93,11 +94,14 @@ private:
 		}
 	}
 
+	// Populate Descriptor Tables
 	void populate_dt();
 	// pfn_t prepare_mpstartup_code();
 	// void complete_remote_init();
 
+	// Handle a General Protection Fault
 	void handle_gpf(machine_context* mc);
+	// Handle a Page Fault
 	void handle_page_fault(machine_context* mc);
 };
 } // namespace stacsos::kernel::arch::x86

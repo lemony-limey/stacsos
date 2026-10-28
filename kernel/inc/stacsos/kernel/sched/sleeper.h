@@ -9,15 +9,18 @@
 
 #include <stacsos/list.h>
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class thread;
 
-struct sleeping_thread {
-	thread *thr;
+struct sleeping_thread
+{
+	thread* thr;
 	u64 wakeup_deadline;
 };
 
-class sleeper {
+class sleeper
+{
 	DEFINE_SINGLETON(sleeper)
 
 public:
@@ -27,7 +30,7 @@ public:
 private:
 	sleeper() { }
 
-	list<sleeping_thread *> sleeping_;
+	list<sleeping_thread*> sleeping_;
 
 	void do_sleep(u64 wakeup_deadline);
 };

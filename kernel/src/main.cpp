@@ -41,7 +41,7 @@ logger main_logger(logger::root_logger, "main");
 
 static void init_console()
 {
-	auto &dm = device_manager::get();
+	auto & dm = device_manager::get();
 
 	auto rtc = new cmos_rtc(dm.sysbus());
 	dm.register_device(*rtc);
@@ -54,7 +54,7 @@ static void init_console()
 	dm.register_device(*phys_console);
 
 	// Determines whether to enable graphics mode or not.
-	const char *console_mode_option = config::get().get_option("console-mode");
+	const char* console_mode_option = config::get().get_option("console-mode");
 	virtual_console_mode console_mode = virtual_console_mode::text;
 	if (console_mode_option && stacsos::memops::strcmp(config::get().get_option("console-mode"), "gfx") == 0) {
 		console_mode = virtual_console_mode::gfx;
@@ -83,7 +83,8 @@ static void init_console()
 	phys_console->add_virtual_console(*vc0);
 	phys_console->add_virtual_console(*vc1);
 
-	if (console_mode == virtual_console_mode::gfx) {
+	if (console_mode == virtual_console_mode::gfx)
+	{
 		// Add an extra virtual console, if in graphics mode.
 		auto vc2 = new virtual_console(dm.sysbus(), console_mode);
 		dm.register_device(*vc2);
@@ -101,21 +102,24 @@ static void continue_main()
 	init_console();
 
 	// Mount the root filesystem
-	auto *root = vfs::get().lookup("/");
-	if (!root) {
+	auto* root = vfs::get().lookup("/");
+	if (!root)
+	{
 		panic("unable to acquire fs root");
 	}
 
-	auto &dev = device_manager::get().get_device_by_name<partition>("part0");
-	auto *fs = filesystem::create_from_bdev(dev, fs_type_hint::fat);
-	if (!fs) {
+	auto & dev = device_manager::get().get_device_by_name<partition>("part0");
+	auto* fs = filesystem::create_from_bdev(dev, fs_type_hint::fat);
+	if (!fs)
+	{
 		panic("unable to create filesystem");
 	}
 
 	root->mount(*fs);
 
 	auto *devfs_dir = vfs::get().lookup("/")->mkdir("dev");
-	if (!devfs_dir) {
+	if (!devfs_dir)
+	{
 		panic("unable to create directory for devfs");
 	}
 
@@ -123,7 +127,8 @@ static void continue_main()
 
 	// Launch the init process
 	auto init_proc = process_manager::get().create_process("/usr/init", "");
-	if (!init_proc) {
+	if (!init_proc) 
+	{
 		panic("unable to create init process");
 	}
 
@@ -131,7 +136,7 @@ static void continue_main()
 	init_proc->start();
 }
 
-__noreturn void main(const char *cmdline)
+__noreturn void main(const char* cmdline)
 {
 	debug_helper::get().parse_image();
 	stacsos::kernel::config::get().init(cmdline);
@@ -146,7 +151,7 @@ __noreturn void main(const char *cmdline)
 	// Next, initialise the VFS.
 	stacsos::kernel::fs::vfs::get().init();
 
-	// Initialise the device manager, and probe the platform.
+	// Initialise the (block) device manager, and probe the platform (AKA parse the ACPI tables).
 	stacsos::kernel::dev::device_manager::get().init();
 	stacsos::kernel::arch::x86::x86_platform::get().probe();
 

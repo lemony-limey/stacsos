@@ -38,9 +38,9 @@ shared_ptr<process> process_manager::create_kernel_process(continuation_fn cfn)
 	return kernel_process_ptr;
 }
 
-shared_ptr<process> process_manager::create_process(const char *path, const char *args)
+shared_ptr<process> process_manager::create_process(const char* path, const char* args)
 {
-	auto *binary = stacsos::kernel::fs::vfs::get().lookup(path);
+	auto* binary = stacsos::kernel::fs::vfs::get().lookup(path);
 	if (!binary) {
 		dprintf("pm: binary '%s' not found\n", path);
 		return nullptr;
@@ -60,12 +60,12 @@ shared_ptr<process> process_manager::create_process(const char *path, const char
 		return nullptr;
 	}
 
-	if (((const elf_ident_header *)header_buffer)->ei_class != elf_ident_classes::ei_class_64bit) {
+	if (((const elf_ident_header*)header_buffer)->ei_class != elf_ident_classes::ei_class_64bit) {
 		dprintf("pm: invalid elf class\n");
 		return nullptr;
 	}
 
-	const elf_header<64> *ehdr = (const elf_header<64> *)header_buffer;
+	const elf_header<64>* ehdr = (const elf_header<64>*)header_buffer;
 
 	// parse elf file
 	// create process
@@ -74,11 +74,11 @@ shared_ptr<process> process_manager::create_process(const char *path, const char
 
 	auto proc = new process(exec_privilege::user);
 
-	char *program_headers = new char[ehdr->e_phnum * ehdr->e_phentsize];
+	char* program_headers = new char[ehdr->e_phnum * ehdr->e_phentsize];
 	file->pread(program_headers, ehdr->e_phoff, ehdr->e_phnum * ehdr->e_phentsize);
 
 	for (int seg_idx = 0; seg_idx < ehdr->e_phnum; seg_idx++) {
-		const elf_programheader<64> *phdr = ((const elf_programheader<64> *)(program_headers + (seg_idx * ehdr->e_phentsize)));
+		const elf_programheader<64>* phdr = ((const elf_programheader<64>*)(program_headers + (seg_idx * ehdr->e_phentsize)));
 
 		// dprintf("hdr %d: type=%d flags=%x off=%lx vaddr=%lx paddr=%lx memsz=%lx filesz=%lx\n", seg_idx, phdr->p_type, phdr->p_flags, phdr->p_offset,
 		// phdr->p_vaddr, phdr->p_paddr, phdr->p_memsz, phdr->p_filesz);
@@ -94,7 +94,7 @@ shared_ptr<process> process_manager::create_process(const char *path, const char
 			}
 
 			// rgn->storage
-			void *target = (char *)rgn->storage->base_address_ptr() + vaddr_page_offset;
+			void* target = (char*)rgn->storage->base_address_ptr() + vaddr_page_offset;
 			// dprintf("copy to %p\n", target);
 			file->pread(target, phdr->p_offset, phdr->p_filesz);
 		}
@@ -107,9 +107,9 @@ shared_ptr<process> process_manager::create_process(const char *path, const char
 		panic("unable to allocate data page");
 	}
 
-	memops::strncpy((char *)data_page->storage->base_address_ptr(), args, memops::strlen(args) + 1);
+	memops::strncpy((char*)data_page->storage->base_address_ptr(), args, memops::strlen(args) + 1);
 
-	proc->create_thread(ehdr->e_entry, (void *)data_page->base);
+	proc->create_thread(ehdr->e_entry, (void*)data_page->base);
 
 	auto pp = shared_ptr(proc);
 	active_processes_.append(pp);

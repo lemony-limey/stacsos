@@ -26,6 +26,7 @@ struct machine_context
 	void dump() const;
 } __packed;
 
+// Code segment offset?
 constexpr static u64 cs_offset = __builtin_offsetof(machine_context, cs);
 
 } // namespace stacsos::kernel::arch::x86

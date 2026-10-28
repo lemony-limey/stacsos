@@ -9,6 +9,7 @@
 
 namespace stacsos::kernel::arch::x86
 {
+// TimeStamp Counter
 class tsc
 {
 public:

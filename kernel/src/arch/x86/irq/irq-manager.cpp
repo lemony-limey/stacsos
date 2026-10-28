@@ -49,17 +49,18 @@ static irq_trap_fn_type irq_trap_functions[] = { x86_irq_trap_0, x86_irq_trap_1,
 	x86_irq_trap_241, x86_irq_trap_242, x86_irq_trap_243, x86_irq_trap_244, x86_irq_trap_245, x86_irq_trap_246, x86_irq_trap_247, x86_irq_trap_248,
 	x86_irq_trap_249, x86_irq_trap_250, x86_irq_trap_251, x86_irq_trap_252, x86_irq_trap_253, x86_irq_trap_254, x86_irq_trap_255 };
 
-extern "C" void x86_handle_irq(u8 irq_number, void *mcontext) { x86_core::this_core().irqmgr().handle_irq(irq_number, mcontext); }
+extern "C" void x86_handle_irq(u8 irq_number, void* mcontext) { x86_core::this_core().irqmgr().handle_irq(irq_number, mcontext); }
 
-static void unhandled_interrupt(u8 irq_number, void *mcontext, void *arg)
+static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)
 {
-	machine_context *mc = (machine_context *)mcontext;
-	auto &thread = stacsos::kernel::sched::thread::current();
+	machine_context* mc = (machine_context*)mcontext;
+	auto & thread = stacsos::kernel::sched::thread::current();
 	dprintf("[%u] unhandled irq %u RIP=%p TASK=%p\n", stacsos::kernel::arch::core::this_core_id(), irq_number, mc->rip, &thread);
 	mc->dump();
 
-	u64 *ptr = (u64 *)mc->rbp;
-	while (*ptr) {
+	u64* ptr = (u64*)mc->rbp;
+	while (*ptr)
+	{
 		dprintf("Ret Addr=%p\n", ptr[1]);
 		ptr = (u64 *)ptr[0];
 	}
@@ -70,13 +71,15 @@ static void unhandled_interrupt(u8 irq_number, void *mcontext, void *arg)
 template <int NR_IRQS> void irq_manager<NR_IRQS>::initialise()
 {
 	// Mark all the exception vectors as used.
-	for (int i = 0; i < 32; i++) {
+	for (int i = 0; i < 32; i++)
+	{
 		used_irq_[i] = true;
 	}
 
 	// Fill in the IDT registrations with the corresponding trap function, and
 	// populate the handler functions with the unhandled handler.
-	for (int i = 0; i < idt_.NR_ENTRIES; i++) {
+	for (int i = 0; i < idt_.NR_ENTRIES; i++)
+	{
 		idt_.register_interrupt_gate(i, (uintptr_t)irq_trap_functions[i], 8, descriptor_privilege_level::ring0);
 		handlers_[i] = unhandled_interrupt;
 		handler_args_[i] = nullptr;
@@ -86,16 +89,18 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::initialise()
 	idt_.reload();
 }
 
-template <int NR_IRQS> void irq_manager<NR_IRQS>::assign_irq(u8 irq_number, irq_handler_fn handler, void *arg)
+template <int NR_IRQS> void irq_manager<NR_IRQS>::assign_irq(u8 irq_number, irq_handler_fn handler, void* arg)
 {
 	// Store the handler in the metadata structure.
 	handlers_[irq_number] = handler;
 	handler_args_[irq_number] = arg;
 }
 
-template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq_handler_fn handler, void *arg)
+template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq_handler_fn handler, void* arg)
 {
-	if (used_irq_[irq_number]) {
+	// Check the bitset that contains information about which entries in the IDT have already been assigned.
+	if (used_irq_[irq_number])
+	{
 		panic("IRQ # already reserved");
 	}
 
@@ -103,7 +108,7 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq
 	assign_irq(irq_number, handler, arg);
 }
 
-template <int NR_IRQS> u8 irq_manager<NR_IRQS>::allocate_irq(irq_handler_fn handler, void *arg)
+template <int NR_IRQS> u8 irq_manager<NR_IRQS>::allocate_irq(irq_handler_fn handler, void* arg)
 {
 	// Find a free IRQ number, and reserve it.
 	u64 irq = used_irq_.find_first_zero();

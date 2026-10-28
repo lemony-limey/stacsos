@@ -9,7 +9,7 @@
 
 namespace stacsos::kernel::dev::acpi
 {
-// Describes an entry in the RSDP
+// Describes an entry in the RSDP (Root System Description Pointer) structure.
 struct rsdp_descriptor
 {
 	u64 signature;
@@ -71,6 +71,7 @@ struct madt_record_interrupt_source_override
 	u16 flags;
 } __packed;
 
+// Multiple APIC Description Table (it describes APIC)
 struct madt
 {
 	sdt_header header;
@@ -88,6 +89,7 @@ struct fadt_generic_address
 	u64 address;
 } __packed;
 
+// Fixed ACPI Description Table
 struct fadt
 {
 	sdt_header header;
@@ -158,12 +160,14 @@ struct fadt
 	fadt_generic_address x_gpe1_block;
 } __packed;
 
+// Differentiated System Description Table
 struct dsdt
 {
 	sdt_header header;
 	u8 definition_block[0];
 } __packed;
 
+// High Precision Event Timer
 struct hpet
 {
 	sdt_header header;
@@ -188,6 +192,7 @@ struct configuration_space_base_address_allocation
 	u32 reserved;
 } __packed;
 
+// PCIe Memory-mapped ConFiGuration space base address table.
 struct mcfg
 {
 	sdt_header header;

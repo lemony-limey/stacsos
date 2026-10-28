@@ -14,6 +14,7 @@
 
 namespace stacsos::kernel::mem {
 class memory_manager {
+	// Getter is defined because of this macro. The memory manager class is defined as a static.
 	DEFINE_SINGLETON(memory_manager)
 
 private:
@@ -28,15 +29,15 @@ public:
 
 	void init();
 
-	page_allocator &pgalloc() const { return *pgalloc_; }
+	page_allocator & pgalloc() const { return *pgalloc_; }
 
-	page_table_allocator &ptalloc() { return ptalloc_; }
-	const page_table_allocator &ptalloc() const { return ptalloc_; }
+	page_table_allocator & ptalloc() { return ptalloc_; }
+	const page_table_allocator & ptalloc() const { return ptalloc_; }
 
-	object_allocator &objalloc() { return objalloc_; }
-	const object_allocator &objalloc() const { return objalloc_; }
+	object_allocator & objalloc() { return objalloc_; }
+	const object_allocator & objalloc() const { return objalloc_; }
 
-	address_space &root_address_space() const { return *root_address_space_; }
+	address_space & root_address_space() const { return *root_address_space_; }
 
 	bool try_handle_page_fault(u64 faulting_address);
 
@@ -46,10 +47,10 @@ private:
 	void initialise_object_allocator();
 	void activate_primary_mapping();
 
-	page_allocator *pgalloc_;
+	page_allocator* pgalloc_;
 	page_table_allocator ptalloc_;
 	object_allocator objalloc_;
 
-	address_space *root_address_space_;
+	address_space* root_address_space_;
 };
 } // namespace stacsos::kernel::mem

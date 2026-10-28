@@ -19,6 +19,7 @@ enum class x2apic_lvts
 	error,
 };
 
+// ICR = Interrupt Command Register
 enum class icr_delivery_mode : u64 { fixed = 0, reserved1 = 1, smi = 2, reserved2 = 3, nmi = 4, init = 5, startup = 6, reserved3 = 7 };
 enum class icr_dest_mode : u64 { physical = 0, logical = 1 };
 enum class icr_level : u64 { deassert = 0, assert = 1 };

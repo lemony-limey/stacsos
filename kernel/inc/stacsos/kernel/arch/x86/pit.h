@@ -16,6 +16,7 @@ class pit
 public:
 	void init_oneshot(u64 period)
 	{
+		// Channel 2 data port?
 		u8 data = pio::inb(0x61);
 		data &= 0xfe;
 		data |= 1;
@@ -23,7 +24,7 @@ public:
 		// Set Gate Enable
 		pio::outb(0x61, data);
 
-		// Channel 2: lobyte/hibyte, hardware one-shot, binary mode
+		// Channel 2: lobyte/hibyte, mode 1 - hardware one-shot, 16-bit binary mode.
 		pio::outb(0x43, 0xb2);
 
 		// Set reload register
@@ -44,6 +45,8 @@ public:
 		pio::outb(0x61, data);
 	}
 
+	// https://stackoverflow.com/questions/31551888/casting-int-to-bool-in-c-c
+	// 0 = false, non-zero = true
 	bool expired() const
 	{
 		u8 expired = pio::inb(0x61);

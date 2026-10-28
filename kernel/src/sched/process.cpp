@@ -13,10 +13,11 @@ using namespace stacsos;
 using namespace stacsos::kernel::sched;
 using namespace stacsos::kernel::mem;
 
-shared_ptr<thread> process::create_thread(u64 entry_point, void *entry_arg)
+shared_ptr<thread> process::create_thread(u64 entry_point, void* entry_arg)
 {
 	u64 user_stack = 0;
-	if (priv_ == exec_privilege::user) {
+	if (priv_ == exec_privilege::user)
+	{
 		u64 stack_base = next_user_stack_;
 		u64 stack_size = 0x4000;
 
@@ -34,7 +35,8 @@ shared_ptr<thread> process::create_thread(u64 entry_point, void *entry_arg)
 
 void process::start()
 {
-	for (auto &t : threads_) {
+	for (auto & t : threads_)
+	{
 		t->start();
 	}
 
@@ -44,7 +46,8 @@ void process::start()
 
 void process::stop()
 {
-	for (auto &t : threads_) {
+	for (auto & t : threads_)
+	{
 		t->stop();
 	}
 
@@ -52,17 +55,20 @@ void process::stop()
 	state_changed_event_.trigger();
 }
 
-void process::on_thread_stopped(thread &thread)
+void process::on_thread_stopped(thread & thread)
 {
 	// dprintf("proc: thread stopped\n");
 
 	// Don't do anything further for the kernel process.
-	if (priv_ == exec_privilege::kernel) {
+	if (priv_ == exec_privilege::kernel)
+	{
 		return;
 	}
 
-	for (auto &t : threads_) {
-		if (t->state() != thread_states::terminated) {
+	for (auto & t : threads_)
+	{
+		if (t->state() != thread_states::terminated)
+		{
 			return;
 		}
 	}

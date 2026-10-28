@@ -16,9 +16,9 @@ using namespace stacsos::kernel;
 using namespace stacsos::kernel::arch::x86;
 using namespace stacsos::kernel::sched;
 
-void x2apic_timer::timer_irq_handler(u8 irq, void *context, void *arg)
+void x2apic_timer::timer_irq_handler(u8 irq, void* context, void* arg)
 {
-	x2apic_timer *timer = (x2apic_timer *)arg;
+	x2apic_timer* timer = (x2apic_timer*) arg;
 	timer->lapic_.owner().update_clock();
 
 	sleeper::get().check_wakeup();

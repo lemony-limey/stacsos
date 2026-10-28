@@ -60,7 +60,8 @@ struct core_enumerator
 
 		void progress()
 		{
-			while (off_ < en_.count_ && en_.core_array_[off_] == nullptr) {
+			while (off_ < en_.count_ && en_.core_array_[off_] == nullptr)
+			{
 				off_++;
 			}
 		}
@@ -86,6 +87,7 @@ public:
 	{
 		for (int i = 0; i < max_cores; i++)
 		{
+			// Keeps track of cores that are detected
 			cores_[i] = nullptr;
 		}
 	}
@@ -104,6 +106,7 @@ public:
 
 	core & get_boot_core() const { return get_core(0); }
 
+	// Called per core detected in ACPI tables
 	void register_core(core & c);
 
 	__noreturn void go();

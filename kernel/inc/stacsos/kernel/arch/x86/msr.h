@@ -10,6 +10,7 @@
 namespace stacsos::kernel::arch::x86
 {
 
+// Table 13-6, Intel SDM
 enum class msr_indicies : unsigned
 {
 	EFER = 0xc0000080,
@@ -140,6 +141,7 @@ public:
 	}
 };
 
+// MSRs = Model Specific Registers
 class msrs
 {
 public:
@@ -220,12 +222,13 @@ public:
 	static wrapped_msr<msr_indicies::X2APIC_SELF_IPI> x2apic_self_ipi;
 };
 
+// MSR = Model-Specific Registers
 class msr
 {
 public:
 	static void write(msr_indicies msr_id, u64 msr_value)
 	{
-		u32 low = msr_value & 0xffffffff;
+		u32 low = msr_value & 0xffff'ffff;
 		u32 high = (msr_value >> 32);
 
 		asm volatile("wrmsr" : : "c"((u32)msr_id), "a"(low), "d"(high));

@@ -14,14 +14,16 @@
 #include <stacsos/list.h>
 #include <stacsos/memory.h>
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class thread;
 
 enum exec_privilege { kernel, user };
 
 enum class process_state { created, started, terminated };
 
-class process {
+class process
+{
 	friend class thread;
 
 public:
@@ -35,26 +37,26 @@ public:
 
 	exec_privilege privilege() const { return priv_; }
 
-	shared_ptr<thread> create_thread(u64 entry_point, void *entry_arg = nullptr);
+	shared_ptr<thread> create_thread(u64 entry_point, void* entry_arg = nullptr);
 
 	process_state state() const { return state_; }
 
 	void start();
 	void stop();
 
-	mem::address_space &addrspace() const { return *vma_; }
+	mem::address_space & addrspace() const { return *vma_; }
 
-	auto_reset_event &state_changed_event() { return state_changed_event_; }
+	auto_reset_event & state_changed_event() { return state_changed_event_; }
 
 private:
 	exec_privilege priv_;
 	process_state state_;
 	auto_reset_event state_changed_event_;
 
-	mem::address_space *vma_;
+	mem::address_space* vma_;
 	list<shared_ptr<thread>> threads_;
 	u64 next_user_stack_;
 
-	void on_thread_stopped(thread &thread);
+	void on_thread_stopped(thread & thread);
 };
 } // namespace stacsos::kernel::sched

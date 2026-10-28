@@ -11,6 +11,7 @@
 
 using namespace stacsos::kernel::arch::x86;
 
+// TimeStamp Counter
 void tsc::calibrate()
 {
 	pit p;
