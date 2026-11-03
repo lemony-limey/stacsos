@@ -31,14 +31,17 @@ public:
 
 	bool is_a(const device_class & dc)
 	{
+		// If both device_class instances are the same thing.
 		if (&dc == this)
 		{	
 			return true;
 		}
+		// If they are not the same and this is the root device_class.
 		if (parent_ == nullptr)
 		{	
 			return false;
 		}
+		// Else traverse up the tree.
 		return parent_->is_a(dc);
 	}
 
@@ -52,7 +55,7 @@ private:
 	{}
 
 	device_class* parent_;
-	const char* name_;
-	u64 index_;
+	const char*   name_;
+	u64           index_;
 };
 } // namespace stacsos::kernel::dev

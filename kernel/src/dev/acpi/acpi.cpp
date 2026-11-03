@@ -151,7 +151,8 @@ bool ACPI::parse_mcfg(const mcfg* mcfg)
 		dprintf("mcfg: base=%p, seg=%u, st=%u\n", ba->base_address, ba->segment_group_nr, ba->starting_pci_bus);
 
 		device_manager::get().register_bus(*new pci_express_bus(platform_bus_, phys_to_virt(ba->base_address), ba->starting_pci_bus, ba->ending_pci_bus));
-		ba++;
+		ba++;  // Increments the pointer by the entire size of a configuration_space_base_address_allocation structure.
+		// The while loop will exit once the pointer points past the end of the MCFG table.
 	}
 
 	return true;

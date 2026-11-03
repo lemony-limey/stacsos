@@ -17,7 +17,7 @@ public:
 	using key_type = K;
 	using data_type = D;
 
-	avl_tree_node(const K &key, const D &data)
+	avl_tree_node(const K & key, const D & data)
 		: key_(key)
 		, data_(data)
 		, left_(nullptr)
@@ -41,14 +41,14 @@ public:
 		return lh - rh;
 	}
 
-	const K &key() const { return key_; }
-	const D &data() const { return data_; }
+	const K & key() const { return key_; }
+	const D & data() const { return data_; }
 
-	avl_tree_node *left() const { return left_; }
-	avl_tree_node *right() const { return right_; }
+	avl_tree_node* left() const { return left_; }
+	avl_tree_node* right() const { return right_; }
 
-	void left(avl_tree_node *n) { left_ = n; }
-	void right(avl_tree_node *n) { right_ = n; }
+	void left(avl_tree_node* n) { left_ = n; }
+	void right(avl_tree_node* n) { right_ = n; }
 
 private:
 	K key_;
@@ -66,8 +66,8 @@ template <class N> struct avl_tree_iterator_pair {
 	{
 	}
 
-	const typename node_type::key_type &key;
-	const typename node_type::data_type &value;
+	const typename node_type::key_type & key;
+	const typename node_type::data_type & value;
 };
 
 template <class N> class avl_tree_iterator {

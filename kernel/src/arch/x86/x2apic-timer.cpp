@@ -16,14 +16,21 @@ using namespace stacsos::kernel;
 using namespace stacsos::kernel::arch::x86;
 using namespace stacsos::kernel::sched;
 
+// The function signature has to be this way because it is defined as a newtype alias
+// in arch/x86/irq-manager.h
 void x2apic_timer::timer_irq_handler(u8 irq, void* context, void* arg)
 {
 	x2apic_timer* timer = (x2apic_timer*) arg;
 	timer->lapic_.owner().update_clock();
 
+	// Check all timer things that are waiting to be woken up.
+	// This should use a priority queue, but doesn't.
 	sleeper::get().check_wakeup();
 
+	// This is how preemption is done. Switch to the next scheduled task here.
 	timer->lapic_.owner().schedule();
+
+	// 
 	timer->lapic_.eoi();
 }
 

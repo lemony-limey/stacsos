@@ -141,7 +141,7 @@ public:
 	u8 header_type() const { return read_config_value<u8>(14); }
 	u8 bist() const { return read_config_value<u8>(15); }
 
-	// Header 0
+	// Header 0. BAR = Base Address Register
 	u32 bar0() const { return read_config_value<u32>(16); }
 	u32 bar1() const { return read_config_value<u32>(20); }
 	u32 bar2() const { return read_config_value<u32>(24); }
@@ -201,6 +201,7 @@ public:
 
 	template <typename T> T read_config_value(u8 offset) const
 	{
+		// 3u = 0b0000_0011, so ~3 is all bits set except from 0 and 1.
 		u32 aligned_offset = offset & ~3u;
 		u32 value_word = read_config_word(aligned_offset);
 

@@ -76,6 +76,8 @@ private:
 	x2apic_timer timer_;
 	tsc tsc_;
 
+	// When is this called? Because (software) interrupts don't indicate
+	// which interrupt or exception has occurred.
 	static void exception_handler(u8 irq, void* context, void* arg)
 	{
 		switch (irq)

@@ -96,14 +96,16 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::assign_irq(u8 irq_number, irq_
 	handler_args_[irq_number] = arg;
 }
 
+// Risk of TOCTTOU race condition?
 template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq_handler_fn handler, void* arg)
 {
-	// Check the bitset that contains information about which entries in the IDT have already been assigned.
+	// Check if the IRQ number has already been reserved previously.
 	if (used_irq_[irq_number])
 	{
 		panic("IRQ # already reserved");
 	}
 
+	// Reserve the IRQ number and assign it (i.e., write the handler info to the metadata structure).
 	used_irq_[irq_number] = true;
 	assign_irq(irq_number, handler, arg);
 }

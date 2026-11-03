@@ -10,10 +10,12 @@
 #include <stacsos/list.h>
 #include <stacsos/kernel/lock.h>
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class thread;
 
-template <bool AUTO_RESET> class event {
+template <bool AUTO_RESET> class event
+{
 public:
 	event()
 		: triggered_(false)
@@ -25,12 +27,12 @@ public:
 	void reset() { triggered_ = false; }
 
 private:
-	bool triggered_;
-	spinlock_irq lock_;
+	bool           triggered_;
+	spinlock_irq   lock_;
 	list<thread *> wait_list_;
 };
 
-using auto_reset_event = event<true>;
+using auto_reset_event   = event<true>;
 using manual_reset_event = event<false>;
 
 } // namespace stacsos::kernel::sched

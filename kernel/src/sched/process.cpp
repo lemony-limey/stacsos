@@ -33,8 +33,10 @@ shared_ptr<thread> process::create_thread(u64 entry_point, void* entry_arg)
 	return t;
 }
 
+// Indicate the process has started and that every thread can be run.
 void process::start()
 {
+	// Mark every thread as runnable.
 	for (auto & t : threads_)
 	{
 		t->start();

@@ -62,6 +62,7 @@ struct madt_record_ioapic
 	u32 gsi_base;
 } __packed;
 
+// Interrupt Source Override.
 struct madt_record_interrupt_source_override
 {
 	madt_record_header header;
@@ -160,7 +161,7 @@ struct fadt
 	fadt_generic_address x_gpe1_block;
 } __packed;
 
-// Differentiated System Description Table
+// Differentiated System Description Table (contains stuff about AML)
 struct dsdt
 {
 	sdt_header header;
@@ -192,7 +193,7 @@ struct configuration_space_base_address_allocation
 	u32 reserved;
 } __packed;
 
-// PCIe Memory-mapped ConFiGuration space base address table.
+// PCIe Memory-mapped ConFiGuration (MCFG) space base address table.
 struct mcfg
 {
 	sdt_header header;

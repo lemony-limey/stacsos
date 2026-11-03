@@ -111,13 +111,13 @@ void thread::change_state(thread_states new_state)
 {
 	// Ignore threads whose state isn't actually changing (unless the state
 	// is "created")
-	if (state_ == new_state && state_ != thread_states::created) {
-		return;
-	}
+	if (state_ == new_state && state_ != thread_states::created) { return; }
 
-	switch (new_state) {
+	switch (new_state)
+	{
 	case thread_states::created: // thread is newly created
-		switch (state_) {
+		switch (state_)
+		{
 		case thread_states::created:
 			state_ = new_state;
 			break;

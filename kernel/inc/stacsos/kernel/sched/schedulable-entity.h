@@ -19,6 +19,7 @@ namespace stacsos::kernel::sched
 {
 class schedulable_entity;
 
+// Task Control Block
 struct tcb 
 {
 	schedulable_entity* entity; // 0x0

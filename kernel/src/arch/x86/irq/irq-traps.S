@@ -6,6 +6,8 @@
  * Tom Spink <tcs6@st-andrews.ac.uk>
  */
 
+
+// PUSH_STATE
 .macro PUSH_STATE
 	push %rax
 	push %rcx
@@ -48,6 +50,8 @@
 #endif
 .endm
 
+
+// POP_STATE
 .macro POP_STATE
 #ifdef USE_FSGSBASE
 	pop %rax
@@ -90,6 +94,8 @@
 	pop %rax
 .endm
 
+
+// TRAP_BEGIN
 .macro TRAP_BEGIN,has_arg
 .if ! \has_arg
 	push $0
@@ -106,6 +112,8 @@
 	mov %rsp, %gs:8
 .endm
 
+
+// TRAP_COMPLETE
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
 	mov %gs:8, %rsp

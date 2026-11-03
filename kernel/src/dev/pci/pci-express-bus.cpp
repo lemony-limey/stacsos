@@ -31,6 +31,7 @@ void pci_express_bus::probe_bus(unsigned int bus)
 	}
 }
 
+// A slot represents one of the physical slots on the motherboard.
 void pci_express_bus::probe_slot(unsigned int bus, unsigned int slot)
 {
 	probe_func(bus, slot, 0);
@@ -51,7 +52,9 @@ static const char* pci_device_class_names[] = { "none", "mass storage", "network
 
 void pci_express_bus::probe_func(unsigned int bus, unsigned int slot, unsigned int func)
 {
+	// I believe transport is an abstraction over reading and writing to/from the PCI bus.
 	pcie_transport* transport = new pcie_transport(compute_base(bus, slot, func));
+	// PCI device configuration is where the actual structure is parsed, using the transport handle.
 	pci_device_configuration* config = new pci_device_configuration(*transport);
 
 	// A missing device is not an error.
@@ -63,6 +66,8 @@ void pci_express_bus::probe_func(unsigned int bus, unsigned int slot, unsigned i
 	dprintf("pcie: %s device @ %u:%u:%u (%04x:%04x)\n", pci_device_class_names[(int)config->class_code()], bus, slot, func, config->vendor_id(),
 		config->device_id());
 
+	// Create a handle to represent the newly parsed PCI device, keeping track of the bus and config details.
 	auto dev = new pci_device(*this, *config);
+	// Keep track of all devices in the device manager.
 	device_manager::get().register_device(*dev);
 }

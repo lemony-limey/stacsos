@@ -96,7 +96,7 @@ public:
 	using qemu_debug_out = ioport<0xe9>;
 	using console_control = ioport<0x3d4>;
 	using console_data = ioport<0x3d5>;
-	using pci_config_address = ioport<0xcf8>;
-	using pci_config_data = ioport<0xcfc>;
+	using pci_config_address = ioport<0xcf8>;  // Config scheme 1
+	using pci_config_data = ioport<0xcfc>;     // Config scheme 1
 };
 } // namespace stacsos::kernel::arch::x86

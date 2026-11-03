@@ -3,8 +3,10 @@
 #include <stacsos/kernel/lock.h>
 #include <stacsos/kernel/sched/thread.h>
 
-namespace stacsos::kernel::sched {
-class completion {
+namespace stacsos::kernel::sched
+{
+class completion
+{
 public:
 	completion()
 		: signalled_(false)
@@ -17,13 +19,15 @@ public:
 		u64 flags;
 		lock_.lock(&flags);
 
-		if (waiter_) {
+		if (waiter_)
+		{
 			panic("only one waiter allowed");
 		}
 
 		waiter_ = &thread::current();
 
-		while (!signalled_) {
+		while (!signalled_)
+		{
 			waiter_->suspend();
 			lock_.unlock(flags);
 
@@ -40,7 +44,8 @@ public:
 		unique_irq_lock l(lock_);
 
 		signalled_ = true;
-		if (waiter_) {
+		if (waiter_)
+		{
 			waiter_->resume();
 			waiter_ = nullptr;
 		}
@@ -48,7 +53,7 @@ public:
 
 private:
 	spinlock_irq lock_;
-	bool signalled_;
-	thread *waiter_;
+	bool         signalled_;
+	thread*      waiter_;
 };
 } // namespace stacsos::kernel::sched

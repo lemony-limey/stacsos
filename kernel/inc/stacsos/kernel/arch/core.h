@@ -78,7 +78,9 @@ public:
 	{
 		u64 flags;
 
-		// TODO: This lock is wrong for MP.
+		// TODO: This lock is wrong for MP. (multiprocessing?)
+		// Is this because the lock could be held across context switches
+		// or interrupt boundaries?
 		rq_lock_.lock(&flags);
 		sched_alg_->add_to_runqueue(tcb);
 		rq_lock_.unlock(flags);
@@ -96,26 +98,30 @@ public:
 
 	void schedule();
 
+	// TCB needs to be generic over machine_contexts from different architectures.
 	virtual void set_current_tcb(const tcb* tcb) = 0;
 	virtual tcb* get_current_tcb() = 0;
 
 	core_status status() const { return status_; }
 
+	// IRQ manager has to become architecture agnostic as well.
 	irq_manager & irqs() { return irqs_; }
 	const irq_manager & irqs() const { return irqs_; }
 
+	// Essentially refreshes the time to represent the current moment, now.
 	void update_clock();
 
 private:
 	int id_;
 	core_status status_;
-	irq_manager irqs_;
+	irq_manager irqs_;  // Create an abstraction for this in the HAL?
 
-	tcb idle_thread_;
-	alg::scheduling_algorithm* sched_alg_;
+	tcb idle_thread_;  // This will maybe be switched out with an execution contexts thing.
+	alg::scheduling_algorithm* sched_alg_;  // Can different cores use different scheduling algorithms?
 
-	u64 clock_;
-	u64 last_clock_;
+	// Also, what clock are we talking about here? Is this the LAPIC timer?
+	u64 clock_;       // Is this the clock's timestamp?
+	u64 last_clock_;  // Is this the clock's previous timestamp?
 
 	spinlock_irq rq_lock_;
 };

@@ -71,6 +71,7 @@ void core::run()
 }
 
 /// @brief Schedule a new task. This is called during preemptive multitasking.
+///  The task that should be switched to is determined by the scheduling algorithm.
 void core::schedule()
 {
 	tcb* current = get_current_tcb();
@@ -98,6 +99,7 @@ void core::schedule()
 	set_current_tcb(next);
 }
 
+// Essentially refreshes the time to represent the current moment, now.
 void core::update_clock()
 {
 	// Update the internal clock

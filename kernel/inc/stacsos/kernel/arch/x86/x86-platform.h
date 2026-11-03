@@ -13,6 +13,11 @@ namespace stacsos::kernel::arch::x86
 {
 class ioapic;
 
+// Given that DEFINE_SINGLETON is used, is this class considered to only have one instance
+// which is static throughout the duration of the program?
+//
+// It is safe to assume that there is only 1 IOAPIC because there is only 
+// one [multi-core] CPU in the system.
 class x86_platform : public platform
 {
 public:

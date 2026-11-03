@@ -17,7 +17,7 @@ class pci_bus;
 
 struct pci_capability
 {
-	u8 offset, vendor;
+	u8 offset, vendor;  // These will contain known values.
 } __packed;
 
 struct pci_capabilities_iterator
@@ -81,7 +81,7 @@ struct pci_capabilities_iterable {
 	pci_capabilities_iterator end() { return pci_capabilities_iterator(config_, -1); }
 
 private:
-	pci_device_configuration &config_;
+	pci_device_configuration & config_;
 };
 
 class pci_device : public device

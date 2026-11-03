@@ -22,24 +22,24 @@ public:
 
 	void initialise();
 
-	void allocate_physical_irq(u32 phys_irq_nr, x86_core &target_core, irq::irq_handler_fn handler_fn, void* handler_fn_arg = nullptr);
-	void map_physical_irq(u32 phys_irq_nr, x86_core &target_core, u8 target_irq_nr);
+	void allocate_physical_irq(u32 phys_irq_nr, x86_core & target_core, irq::irq_handler_fn handler_fn, void* handler_fn_arg = nullptr);
+	void map_physical_irq(u32 phys_irq_nr, x86_core & target_core, u8 target_irq_nr);
 
 private:
 	volatile u32* base_address_;
-	u8 nr_irqs_;
+	u8 nr_irqs_;  // Total number supported or total number allocated?
 
 	void write(u32 reg, u32 val)
 	{
 		base_address_[0] = reg;
-		__sync_synchronize();
+		__sync_synchronize();  // sort of a barrier thing, needed because IOAPIC is shared.
 		base_address_[4] = val;
 	}
 
 	u32 read(u32 reg)
 	{
 		base_address_[0] = reg;
-		__sync_synchronize();
+		__sync_synchronize();  // sort of a barrier thing, needed because IOAPIC is shared.
 		return base_address_[4];
 	}
 
@@ -49,6 +49,7 @@ private:
 		{
 			struct
 			{
+				// BUG: Should this be two u32s, not 2 u64s?
 				u64 low, high;
 			} __packed;
 
@@ -56,13 +57,13 @@ private:
 			{
 				u8 vector;
 				u8 delivery_mode : 3;
-				u8 destination_mode : 1;
-				u8 delivery_status : 1;
-				u8 pin_polarity : 1;
+				u8 destination_mode : 1; // 0 = Physical destination; 1 = Logical destination.
+				u8 delivery_status : 1;  // 0 = IRQ is relaxed and waiting; 1 = Sent but waiting to be delivered.
+				u8 pin_polarity : 1;  // 0 = active high; 1 = active low.
 				u8 remote_irr : 1;
-				u8 trigger_mode : 1;
-				u8 mask : 1;
-				u8 destination;
+				u8 trigger_mode : 1;  // 0 = Edge; 1 = Level.
+				u8 mask : 1;  // 1 means IRQ is masked.
+				u8 destination;  // APIC ID of CPU that you want to receive the interrupt.
 			} __packed;
 		};
 	} __packed;

@@ -19,7 +19,7 @@ using namespace stacsos;
 
 void ioapic::initialise()
 {
-	// ioapic::read(<register_number>: u32) -> u32
+	// ioapic::read(register_number: u32) -> u32
 	u32 ver = read(IOAPIC_VER);
 	// get the 3rd & 4th bytes?
 	nr_irqs_ = (u8)(ver >> 16);
@@ -28,9 +28,9 @@ void ioapic::initialise()
 
 	// Redirection entry tells us which lapic (i.e., CPU core) the interrupt should be
 	// routed to.
+	// Initially, set all IRQ redirection entries to blank.
 	redirection_entry blank;
 	memops::bzero(&blank, sizeof(blank));
-
 	for (unsigned int i = 0; i < nr_irqs_; i++)
 	{
 		store_redir_entry(i, blank);
@@ -41,9 +41,10 @@ void ioapic::store_redir_entry(u8 irq_index, const redirection_entry & e)
 {
 	if (irq_index >= nr_irqs_) { panic("argument out of range"); }
 
+	// irq_index is used to index into the redirection table (redtbl)
 	u8 configuration_register = 0x10 + (irq_index * 2);
-	write(configuration_register, e.low);
-	write(configuration_register + 1, e.high);
+	write(configuration_register, e.low);  // ioapic::write()
+	write(configuration_register + 1, e.high);  // ioapic::write()
 }
 
 /// @brief Allocates a handler function for a given IRQ for a given core.

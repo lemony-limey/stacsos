@@ -109,7 +109,7 @@ static void continue_main()
 	}
 
 	auto & dev = device_manager::get().get_device_by_name<partition>("part0");
-	auto* fs = filesystem::create_from_bdev(dev, fs_type_hint::fat);
+	auto* fs = filesystem::create_from_bdev(dev, fs_type_hint::fat);  // create from block device
 	if (!fs)
 	{
 		panic("unable to create filesystem");
@@ -117,7 +117,7 @@ static void continue_main()
 
 	root->mount(*fs);
 
-	auto *devfs_dir = vfs::get().lookup("/")->mkdir("dev");
+	auto* devfs_dir = vfs::get().lookup("/")->mkdir("dev");
 	if (!devfs_dir)
 	{
 		panic("unable to create directory for devfs");
@@ -146,14 +146,17 @@ __noreturn void main(const char* cmdline)
 	stacsos::kernel::mem::memory_manager::get().init();
 
 	// Now, initialise the core manager, which looks after CPU resources.
+	// It holds handles for all of the cores in the system, each of which have GDTs, TSSs, IDTs,
+	// and loads of other crap.
 	stacsos::kernel::arch::core_manager::get().init();
 
 	// Next, initialise the VFS.
 	stacsos::kernel::fs::vfs::get().init();
 
 	// Initialise the (block) device manager, and probe the platform (AKA parse the ACPI tables).
+	// Device manager will keep track of PCIe devices.
 	stacsos::kernel::dev::device_manager::get().init();
-	stacsos::kernel::arch::x86::x86_platform::get().probe();
+	stacsos::kernel::arch::x86::x86_platform::get().probe();  // Probing the x86 platform looks through ACPI tables.
 
 	// Initialise the process manager, so we can start running threads.
 	stacsos::kernel::sched::process_manager::get().init();

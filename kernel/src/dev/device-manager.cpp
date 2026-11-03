@@ -16,7 +16,9 @@ void device_manager::init() { dprintf("dev: init\n"); }
 
 void device_manager::probe_buses()
 {
-	for (auto *bus : buses_) {
+	// bus* bus
+	for (auto* bus : buses_)
+	{
 		bus->probe();
 	}
 }

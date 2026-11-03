@@ -12,14 +12,19 @@
 
 namespace stacsos::kernel::arch::x86::irq
 {
+// Is this definition from elsewhere or is it a free-for-all?
 using irq_handler_fn = void (*)(u8 irq, void* ctx, void* arg);
 
+// Needed so that we can dynamically allocate IRQ handlers at runtime without knowing
+// of their existence at compile time.
 template <int NR_IRQS> class irq_manager
 {
 public:
 	// IRQ manager is a wrapper that contains the IDT, keeps track
 	// of used IRQ values, handler functions and handler function
 	// arguments.
+	// For software interrupts, we don't know what interrupt was triggered, which
+	// is why this is necessary.
 	irq_manager(interrupt_descriptor_table<NR_IRQS> & idt)
 		: idt_(idt)
 	{}
@@ -38,6 +43,7 @@ private:
 	bitset<NR_IRQS> used_irq_;
 	// The handler functions associated with each entry in the IDT.
 	irq_handler_fn handlers_[NR_IRQS];
+	// Pointers to the arguments for the handler functions.
 	void* handler_args_[NR_IRQS];
 };
 } // namespace stacsos::kernel::arch::x86::irq
