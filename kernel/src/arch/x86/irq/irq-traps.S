@@ -132,6 +132,7 @@
 .align 16
 .globl x86_return_to_task
 .type x86_return_to_task,%function
+// This is what is called at the end of core::run().
 x86_return_to_task:
 	TRAP_COMPLETE
 .size x86_return_to_task,.-x86_return_to_task

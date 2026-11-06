@@ -31,6 +31,7 @@ public:
 	virtual ~device() { }
 	device_class & devclass() const { return devclass_; }
 
+	// The root bus is the system bus.
 	bus & parent_bus() const { return bus_; }
 
 	virtual void configure() = 0;

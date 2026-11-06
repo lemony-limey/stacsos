@@ -108,8 +108,10 @@ struct pcie_transport : pci_transport {
 	{
 	}
 
+	// Lowest 2 bits must always be 0 so that reads/writes are 32-bit/4-byte aligned.
 	u32 read_config_word(u8 offset) const override { return *(u32 *)((uintptr_t)base_ | (offset & ~3u)); }
 
+	// Lowest 2 bits must always be 0 so that reads/writes are 32-bit/4-byte aligned.
 	void write_config_word(u8 offset, u32 value) override { *(u32 *)((uintptr_t)base_ | (offset & ~3u)) = value; }
 
 private:
@@ -202,6 +204,7 @@ public:
 	template <typename T> T read_config_value(u8 offset) const
 	{
 		// 3u = 0b0000_0011, so ~3 is all bits set except from 0 and 1.
+		// This aligns the offset.
 		u32 aligned_offset = offset & ~3u;
 		u32 value_word = read_config_word(aligned_offset);
 
@@ -210,6 +213,8 @@ public:
 
 	template <typename T> void write_config_value(u8 offset, T value)
 	{
+		// 3u = 0b0000_0011, so ~3 is all bits set except from 0 and 1.
+		// This aligns the offset.
 		u32 aligned_offset = offset & ~3u;
 		u32 value_word = read_config_word(aligned_offset);
 

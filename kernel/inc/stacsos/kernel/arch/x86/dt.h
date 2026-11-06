@@ -315,6 +315,7 @@ private:
 
 class task_state_segment;
 
+// GDT is per-core, so is only global in a system with a single core.
 template <int MAX_NR_GDT_ENTRIES> class global_descriptor_table : public descriptor_table
 {
 public:
@@ -336,6 +337,7 @@ private:
 	u64 __aligned(16) gdt_[MAX_NR_GDT_ENTRIES];
 };
 
+// IDT is also per-core.
 template <int MAX_NR_IDT_ENTRIES> class interrupt_descriptor_table : public descriptor_table
 {
 public:

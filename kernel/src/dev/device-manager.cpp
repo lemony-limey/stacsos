@@ -25,6 +25,7 @@ void device_manager::probe_buses()
 
 string device_manager::register_device(device &device)
 {
+	// <device_class><number>
 	string devname = string(device.devclass().name()) + string::to_string(device.devclass().get_next_index());
 
 	dprintf("device-manager: registering device '%s'\n", devname.c_str());

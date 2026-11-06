@@ -147,7 +147,7 @@ __noreturn void main(const char* cmdline)
 
 	// Now, initialise the core manager, which looks after CPU resources.
 	// It holds handles for all of the cores in the system, each of which have GDTs, TSSs, IDTs,
-	// and loads of other crap.
+	// and loads of other crap, but these have not been initialised yet.
 	stacsos::kernel::arch::core_manager::get().init();
 
 	// Next, initialise the VFS.
@@ -156,7 +156,10 @@ __noreturn void main(const char* cmdline)
 	// Initialise the (block) device manager, and probe the platform (AKA parse the ACPI tables).
 	// Device manager will keep track of PCIe devices.
 	stacsos::kernel::dev::device_manager::get().init();
-	stacsos::kernel::arch::x86::x86_platform::get().probe();  // Probing the x86 platform looks through ACPI tables.
+	// Probing the x86 platform looks through ACPI tables.
+	// This is also when the x86_core representation of the bootstrap core is created.
+	// The IOAPIC is also initialised after finding the base address in here.
+	stacsos::kernel::arch::x86::x86_platform::get().probe();  
 
 	// Initialise the process manager, so we can start running threads.
 	stacsos::kernel::sched::process_manager::get().init();

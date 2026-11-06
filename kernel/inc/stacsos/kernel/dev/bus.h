@@ -39,6 +39,9 @@ private:
 	bus* parent_;
 };
 
+// The root bus of the system?
+// When is this actually used though? Other buses have this listed as the parent
+// bus, but is probe actually ever called? If so, it does nothing.
 class system_bus : public bus
 {
 	friend class device_manager;

@@ -144,6 +144,7 @@ template <> inline u16 byte_swap(u16 value)
 	return value;
 }
 
+// Excellent life advice
 static inline void __relax() { asm volatile("pause"); }
 
 #ifndef __i386__

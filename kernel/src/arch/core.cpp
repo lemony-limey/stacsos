@@ -36,6 +36,7 @@ static void idle_thread()
 	}
 }
 
+// Is this an intrinsic?
 extern "C" __noreturn void x86_return_to_task();
 
 void core::run()

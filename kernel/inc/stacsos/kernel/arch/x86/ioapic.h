@@ -27,7 +27,7 @@ public:
 
 private:
 	volatile u32* base_address_;
-	u8 nr_irqs_;  // Total number supported or total number allocated?
+	u8 nr_irqs_;  // Total number supported?
 
 	void write(u32 reg, u32 val)
 	{

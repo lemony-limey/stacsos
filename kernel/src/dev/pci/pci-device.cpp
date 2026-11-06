@@ -21,7 +21,7 @@ using namespace stacsos::kernel::arch::x86::irq;
 
 device_class pci_device::pci_device_class(device_class::root, "pci");
 
-pci_device::pci_device(bus &bus, pci_device_configuration &config)
+pci_device::pci_device(bus & bus, pci_device_configuration & config)
 	: device(pci_device_class, bus)
 	, config_(config)
 {

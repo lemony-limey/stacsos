@@ -18,7 +18,8 @@ using namespace stacsos;
 void pci_express_bus::probe()
 {
 	dprintf("pcie: probing @ %p\n", base_);
-	for (int i = first_; i <= last_; i++) {
+	for (int i = first_; i <= last_; i++)
+	{
 		probe_bus(i);
 	}
 }
@@ -34,17 +35,31 @@ void pci_express_bus::probe_bus(unsigned int bus)
 // A slot represents one of the physical slots on the motherboard.
 void pci_express_bus::probe_slot(unsigned int bus, unsigned int slot)
 {
+	// Parse the first config
+	// Because we need to check this function's config first to see if it
+	// represents a single PCI host controller, or multiple.
+	// But where does the result go? It is added to the device manager if 
+	// the associated device exists.
 	probe_func(bus, slot, 0);
 
+	// Why are there 0s passed in here? The 0 for function makes sense but the
+	// 0 for bus is nonsense.
 	pcie_transport transport(compute_base(0, slot, 0));
 	pci_device_configuration config(transport);
-	if (config.header_type() & 0x80)
+	
+	// If 0x80, then this represents a Single PCI host controller.
+	// 0x80 = 0b1000_0000 (i.e., bit 7, the 8th bit, is set)
+	// Bits 0 and 1 indicate tha type of device.
+	// Header type 0b00 = General device; 0b01 = pci-pci bridge; 0b10 = pci-cardbus bridge
+	// If bit 7 is set the device has muultiple functions, otherwise it is a single function device.
+	if (config.header_type() & 0x80)  // The result of this would be 0 if this is a general device.
 	{
 		for (int func = 1; func < 8; func++)
 		{
 			probe_func(bus, slot, func);
 		}
 	}
+	// else multiple PCI host controllers
 }
 
 static const char* pci_device_class_names[] = { "none", "mass storage", "network", "display", "multimedia", "memory", "bridge", "simple comm",
@@ -57,7 +72,7 @@ void pci_express_bus::probe_func(unsigned int bus, unsigned int slot, unsigned i
 	// PCI device configuration is where the actual structure is parsed, using the transport handle.
 	pci_device_configuration* config = new pci_device_configuration(*transport);
 
-	// A missing device is not an error.
+	// A missing device is not an error. No vendor has 0xffff. This indicates that the device does not exist.
 	if (config->vendor_id() == 0xffff)
 	{
 		return;

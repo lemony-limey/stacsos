@@ -17,11 +17,13 @@ namespace stacsos::kernel::dev
 class device;
 class device_class;
 
+// Only one system-wide instance.
 class device_manager
 {
     friend class device;
 
 public:
+    // Device manager is a system-wide thing, hence why it is defined as a singleton.
     DEFINE_SINGLETON(device_manager)
 
     device_manager() { }
