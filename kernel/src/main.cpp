@@ -98,6 +98,7 @@ static void continue_main()
 {
 	main_logger.log(log_level::info, "now in kernel process");
 
+	// This is where all of the devices in the system are discovered.
 	device_manager::get().probe_buses();
 	init_console();
 
@@ -153,8 +154,8 @@ __noreturn void main(const char* cmdline)
 	// Next, initialise the VFS.
 	stacsos::kernel::fs::vfs::get().init();
 
-	// Initialise the (block) device manager, and probe the platform (AKA parse the ACPI tables).
-	// Device manager will keep track of PCIe devices.
+	// Initialise the (block) device manager.
+	// Device manager will keep track of PCIe devices, once they are detected later on in continue_main().
 	stacsos::kernel::dev::device_manager::get().init();
 	// Probing the x86 platform looks through ACPI tables.
 	// This is also when the x86_core representation of the bootstrap core is created.

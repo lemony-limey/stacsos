@@ -58,7 +58,7 @@ void x86_core::init()
 	msrs::ia32_fmask = (u64)(1 << 9); // Disable interrupts on entry to system call
 }
 
-void x86_core::set_current_tcb(const stacsos::kernel::sched::tcb *tcb)
+void x86_core::set_current_tcb(const stacsos::kernel::sched::tcb* tcb)
 {
 	// TODO: Check if TCB is changing...
 
@@ -72,7 +72,7 @@ void x86_core::set_current_tcb(const stacsos::kernel::sched::tcb *tcb)
 	tss_.set_kernel_stack(tcb->kernel_stack);
 }
 
-stacsos::kernel::sched::tcb *x86_core::get_current_tcb() { return (stacsos::kernel::sched::tcb*)gsbase::read(); }
+stacsos::kernel::sched::tcb* x86_core::get_current_tcb() { return (stacsos::kernel::sched::tcb*)gsbase::read(); }
 
 /// Is this how preemption is implemented?
 /// irq_nr - IRQ number, AKA index into the IDT
@@ -88,18 +88,18 @@ static void yield_handler(u8 irq_nr, void* mcontext, void* arg)
 void x86_core::populate_dt()
 {
 	// Populate the GDT, with a NULL entry, then CODE and DATA segments for KERNEL and USER mode respectively.
-	gdt_.add_null(); // 0
+	gdt_.add_null(); // 0x0
 
 	// Kernel Code + Data
-	gdt_.add_code_segment(descriptor_privilege_level::ring0); // 08
-	gdt_.add_data_segment(descriptor_privilege_level::ring0); // 10
+	gdt_.add_code_segment(descriptor_privilege_level::ring0); // 0x08
+	gdt_.add_data_segment(descriptor_privilege_level::ring0); // 0x10
 
 	// User Code + Data
-	gdt_.add_data_segment(descriptor_privilege_level::ring3); // 18
-	gdt_.add_code_segment(descriptor_privilege_level::ring3); // 20
+	gdt_.add_data_segment(descriptor_privilege_level::ring3); // 0x18
+	gdt_.add_code_segment(descriptor_privilege_level::ring3); // 0x20
 
 	// TSS descriptor
-	gdt_.add_tss(tss_);		// 28
+	gdt_.add_tss(tss_); // 0x28
 
 	gdt_.reload();
 

@@ -12,6 +12,8 @@ namespace stacsos::kernel::arch::x86
 {
 class x2apic;
 
+// I/O APIC does not use define singleton, potentially because there could be multiple if this is used on a mult-CPU system?
+// I/O APIC instances are only ever stored in x86_platform, which does use define_singleton.
 class ioapic
 {
 public:
@@ -31,18 +33,22 @@ private:
 
 	void write(u32 reg, u32 val)
 	{
-		base_address_[0] = reg;
-		__sync_synchronize();  // sort of a barrier thing, needed because IOAPIC is shared.
-		base_address_[4] = val;
+		// 
+		base_address_[0] = reg;  // Put register index in IOREGSEL
+		__sync_synchronize();    // a barrier, needed so that IOREGSEL write fully completes before IOREGWIN write begins.
+		// u32 = 4 bytes. 4 lots of 4 bytes = 16 bytes. 0x10 = 16.
+		// base_address_[4] = base_address_ + (4 * sizeof(u32)) = base_address_ + (4 * 4) = base_address_ + 16 = base_address_ + 0x10.
+		base_address_[4] = val;  // Put value in IOREGWIN, which should be base_address_[0] + 0x10.
 	}
 
 	u32 read(u32 reg)
 	{
 		base_address_[0] = reg;
-		__sync_synchronize();  // sort of a barrier thing, needed because IOAPIC is shared.
+		__sync_synchronize();    // a barrier, needed so that IOREGSEL write fully completes before IOREGWIN read begins.
 		return base_address_[4];
 	}
 
+	// Not saved anywhere by the I/O APIC, simply used to represent the parsed values and make it easier to access them.
 	struct redirection_entry
 	{
 		union
@@ -50,6 +56,7 @@ private:
 			struct
 			{
 				// BUG: Should this be two u32s, not 2 u64s?
+				// Maybe not, because this allows them to be bitshifted.
 				u64 low, high;
 			} __packed;
 

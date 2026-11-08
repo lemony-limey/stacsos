@@ -40,6 +40,9 @@ using namespace stacsos::kernel::arch::x86;
 /**
  * Scans memory for the RSDP by looking for the RSDP signature.  Returns a
  * pointer to the RSDP descriptor, if it's found.
+ * 
+ * Don't need this in the Rust kernel because the bootloader crate already
+ * handles it for us.
  */
 const rsdp_descriptor* ACPI::scan_for_rsdp(uintptr_t start, uintptr_t end)
 {
@@ -128,7 +131,7 @@ bool ACPI::parse_madt_iso(const madt_record_interrupt_source_override* iso)
 }
 
 /**
- * Parses the HPET
+ * Parses the HPET (High-Precision Event Timer).
  */
 bool ACPI::parse_hpet(const hpet* hpet)
 {
@@ -137,7 +140,7 @@ bool ACPI::parse_hpet(const hpet* hpet)
 }
 
 /**
- * Parses the MCFG
+ * Parses the MCFG (PCIe Memory-mapped ConFiGuration space base address table).
  */
 bool ACPI::parse_mcfg(const mcfg* mcfg)
 {
@@ -181,7 +184,7 @@ bool ACPI::parse_dsdt(const dsdt* dsdt)
 }
 
 /**
- * Parses the FADT.
+ * Parses the FADT (Fixed ACPI Description Table).
  */
 bool ACPI::parse_fadt(const fadt* fadt)
 {
@@ -195,7 +198,7 @@ bool ACPI::parse_fadt(const fadt* fadt)
 }
 
 /**
- * Parses the MADT.
+ * Parses the MADT (Multiple APIC Description Table).
  */
 bool ACPI::parse_madt(const madt* madt)
 {
@@ -253,7 +256,7 @@ void ACPI::initialise()
 		panic("unable to locate rsdp");
 	}
 
-	// Verify ACPI checksum.
+	// Verify RSDP checksum.
 	if (!is_structure_valid(rsdp_, sizeof(*rsdp_)))
 	{
 		panic("invalid RSDP structure");
@@ -278,6 +281,7 @@ bool ACPI::probe()
 		return false;
 	}
 
+	// Verify RSDT checksum.
 	if (!is_structure_valid(rsdt, rsdt->header.length))
 	{
 		return false;
@@ -288,6 +292,7 @@ bool ACPI::probe()
 	{
 		hdr = (const sdt_header*)phys_to_virt(rsdt->sdt_pointers[i]);
 
+		// Verify ACPI checksum.
 		if (!is_structure_valid(hdr, hdr->length))
 		{
 			dprintf("acpi: skipping table (invalid checksum)\n");

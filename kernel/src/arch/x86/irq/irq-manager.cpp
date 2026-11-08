@@ -70,13 +70,13 @@ static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)
 
 template <int NR_IRQS> void irq_manager<NR_IRQS>::initialise()
 {
-	// Mark all the exception vectors as used.
+	// Mark all the first 32 exception vectors as used, since they are reserved.
 	for (int i = 0; i < 32; i++)
 	{
 		used_irq_[i] = true;
 	}
 
-	// Fill in the IDT registrations with the corresponding trap function, and
+	// Fill every IDT register with the unhandled_interrupt() handler function, and
 	// populate the handler functions with the unhandled handler.
 	for (int i = 0; i < idt_.NR_ENTRIES; i++)
 	{
@@ -113,6 +113,9 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq
 template <int NR_IRQS> u8 irq_manager<NR_IRQS>::allocate_irq(irq_handler_fn handler, void* arg)
 {
 	// Find a free IRQ number, and reserve it.
+	// The method on used_irq_ is called find_first_zero() because it is a bitset and a 0 indicates
+	// the irq number is unused. The first 32 bits are marked as 1s initially in irq_manager::initialise()
+	// so there's no need to worry about using one of the reserved slots.
 	u64 irq = used_irq_.find_first_zero();
 	reserve_irq(irq, handler, arg);
 

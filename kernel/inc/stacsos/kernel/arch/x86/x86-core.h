@@ -78,6 +78,7 @@ private:
 
 	// When is this called? Because (software) interrupts don't indicate
 	// which interrupt or exception has occurred.
+	// But are software interrupts relevant here? Is this exclusively for exceptions?
 	static void exception_handler(u8 irq, void* context, void* arg)
 	{
 		switch (irq)

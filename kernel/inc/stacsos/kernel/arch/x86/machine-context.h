@@ -16,6 +16,8 @@
 
 namespace stacsos::kernel::arch::x86
 {
+// Why are DS, ES, EFLAGS, R0-R7 all missing? Are they caller-saved?
+// Is this just stuff used in the calling convention?
 struct machine_context
 {
 	u64 gs, fs;

@@ -19,9 +19,11 @@ using namespace stacsos;
 
 void ioapic::initialise()
 {
+	// Get the total number of IRQs supported by this IOAPIC.
 	// ioapic::read(register_number: u32) -> u32
 	u32 ver = read(IOAPIC_VER);
 	// get the 3rd & 4th bytes?
+	// Max Redirection Entry in bits 16-23 is the max number of IRQs this IOAPIC can handle. (OSDev IOAPIC)
 	nr_irqs_ = (u8)(ver >> 16);
 
 	dprintf("ioapic id=%u, ver=%u, nr-irqs=%u\n", read(IOAPIC_ID), ver & 0xff, nr_irqs_);
@@ -29,6 +31,7 @@ void ioapic::initialise()
 	// Redirection entry tells us which lapic (i.e., CPU core) the interrupt should be
 	// routed to.
 	// Initially, set all IRQ redirection entries to blank.
+	// Interesting that the redirection entries are totally zeroed out, what about the reserved bits?
 	redirection_entry blank;
 	memops::bzero(&blank, sizeof(blank));
 	for (unsigned int i = 0; i < nr_irqs_; i++)
@@ -64,7 +67,8 @@ void ioapic::allocate_physical_irq(u32 phys_irq_nr, x86_core & target_core, irq_
 /// @param target_irq_nr 
 void ioapic::map_physical_irq(u32 phys_irq_nr, x86_core & target_core, u8 target_irq_nr)
 {
-	if (phys_irq_nr >= nr_irqs_) {
+	if (phys_irq_nr >= nr_irqs_)
+	{
 		panic("argument out of range");
 	}
 

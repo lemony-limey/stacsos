@@ -20,6 +20,8 @@ using namespace stacsos::kernel::sched;
 // in arch/x86/irq-manager.h
 void x2apic_timer::timer_irq_handler(u8 irq, void* context, void* arg)
 {
+	// Converts the argument pointer set in x2apic_timer::init() back
+	// into an x2apic_timer*.
 	x2apic_timer* timer = (x2apic_timer*) arg;
 	timer->lapic_.owner().update_clock();
 
@@ -30,8 +32,19 @@ void x2apic_timer::timer_irq_handler(u8 irq, void* context, void* arg)
 	// This is how preemption is done. Switch to the next scheduled task here.
 	timer->lapic_.owner().schedule();
 
-	// 
+	// Send the EOI signal.
 	timer->lapic_.eoi();
 }
 
-void x2apic_timer::init() { lapic_.set_timer_irq(lapic_.owner().irqmgr().allocate_irq(timer_irq_handler, this)); }
+void x2apic_timer::init()
+{ 
+	lapic_.set_timer_irq(
+		// x2apic::owner() returns the x86_core that owns this x2apic.
+		lapic_.owner()  
+			// Get a handle to the irq_manager
+			.irqmgr()   
+			// Allocate the handler function that will be called. Passes pointer to this x2apic_timer
+			// instance as an argument.
+			.allocate_irq(timer_irq_handler, this)  
+	);
+}

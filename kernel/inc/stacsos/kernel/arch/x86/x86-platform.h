@@ -27,6 +27,7 @@ public:
 		: ioapic_(nullptr)
 	{}
 
+	// Probes ACPI tables.
 	virtual void probe() override;
 
 	ioapic* get_ioapic() const

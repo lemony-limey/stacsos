@@ -17,6 +17,7 @@ using namespace stacsos::kernel::dev;
 using namespace stacsos::kernel::dev::input;
 using namespace stacsos::kernel;
 
+// Probes ACPI tables.
 void x86_platform::probe()
 {
 	auto acpi = new ACPI(*this);
