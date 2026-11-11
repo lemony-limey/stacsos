@@ -23,7 +23,7 @@ void device_manager::probe_buses()
 	}
 }
 
-string device_manager::register_device(device &device)
+string device_manager::register_device(device & device)
 {
 	// <device_class><number>
 	string devname = string(device.devclass().name()) + string::to_string(device.devclass().get_next_index());
@@ -36,12 +36,14 @@ string device_manager::register_device(device &device)
 	return devname;
 }
 
-void device_manager::add_device_alias(device &device, const string &name) { devices_.add(name.get_hash(), &device); }
+void device_manager::add_device_alias(device & device, const string & name) { devices_.add(name.get_hash(), &device); }
 
-bool device_manager::try_get_device_by_class(const device_class &dc, device *&dp)
+bool device_manager::try_get_device_by_class(const device_class & dc, device* & dp)
 {
-	for (const auto &d : devices_) {
-		if (d.value->devclass().is_a(dc)) {
+	for (const auto &d : devices_)
+	{
+		if (d.value->devclass().is_a(dc))
+		{
 			dp = d.value;
 			return true;
 		}
@@ -50,4 +52,4 @@ bool device_manager::try_get_device_by_class(const device_class &dc, device *&dp
 	return false;
 }
 
-bool device_manager::try_get_device_by_name(const string &name, device *&dp) { return devices_.try_get_value(name.get_hash(), dp); }
+bool device_manager::try_get_device_by_name(const string & name, device* & dp) { return devices_.try_get_value(name.get_hash(), dp); }

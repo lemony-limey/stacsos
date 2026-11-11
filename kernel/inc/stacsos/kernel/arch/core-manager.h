@@ -106,7 +106,8 @@ public:
 
 	core & get_boot_core() const { return get_core(0); }
 
-	// Called per core detected in ACPI tables
+	// Called per core detected in ACPI tables, but uses processor core to determine if it
+	// should be added, so only 1 core is ever added.
 	void register_core(core & c);
 
 	__noreturn void go();

@@ -44,6 +44,7 @@ public:
 	void start();
 	void stop();
 
+	// What does a process' address space represent?
 	mem::address_space & addrspace() const { return *vma_; }
 
 	auto_reset_event & state_changed_event() { return state_changed_event_; }

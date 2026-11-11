@@ -26,10 +26,14 @@ void core_manager::go()
 
 	int this_core_id = core::this_core_id();
 
-	// Bring remote cores online
-	for (int i = 0; i < max_cores; i++) {
+	// Bring remote cores online.
+	// Won't do anything yet because this is called before the ACPI tables are parsed,
+	// so the platform won't have the handles of other cores yet.
+	for (int i = 0; i < max_cores; i++)
+	{
 		// Skip missing cores, or this one.
-		if (cores_[i] == nullptr || cores_[i]->id_ == this_core_id) {
+		if (cores_[i] == nullptr || cores_[i]->id_ == this_core_id)
+		{
 			continue;
 		}
 
@@ -41,13 +45,15 @@ void core_manager::go()
 	core::this_core().run();
 }
 
-void core_manager::register_core(core &c)
+void core_manager::register_core(core & c)
 {
 	if (c.id_ >= max_cores) {
 		panic("core id too big");
 	}
 
-	if (cores_[c.id_] != nullptr) {
+	// Core ID = index into cores array also.
+	if (cores_[c.id_] != nullptr)
+	{
 		panic("core id already registered");
 	}
 

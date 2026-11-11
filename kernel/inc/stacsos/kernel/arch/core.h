@@ -109,6 +109,7 @@ public:
 	const irq_manager & irqs() const { return irqs_; }
 
 	// Essentially refreshes the time to represent the current moment, now.
+	// Uses the TSC count.
 	void update_clock();
 
 private:

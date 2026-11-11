@@ -67,6 +67,7 @@ void process::on_thread_stopped(thread & thread)
 		return;
 	}
 
+	// Mark all of the process' threads as terminated also.
 	for (auto & t : threads_)
 	{
 		if (t->state() != thread_states::terminated)

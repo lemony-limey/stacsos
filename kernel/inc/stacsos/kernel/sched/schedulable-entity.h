@@ -17,14 +17,14 @@ class core;
 
 namespace stacsos::kernel::sched
 {
-class schedulable_entity;
+class schedulable_entity; 
 
-// Task Control Block
+// Thread Control Block (a kind of activation context?)
 struct tcb 
 {
 	schedulable_entity* entity; // 0x0
 	stacsos::kernel::arch::x86::machine_context* mcontext; // 0x8
-	u64 cr3; // 0x10
+	u64 cr3; // 0x10  - Indicates the top level page table.
 	u64 kernel_stack; // 0x18
 	u64 user_stack_save; // 0x20
 	u64 start_time;	// 0x28
@@ -32,6 +32,7 @@ struct tcb
 	u64 run_time;	// 0x38
 } __packed;
 
+// A task. Represents a unit of work (i.e., a thread) that can be executed when in context.
 class schedulable_entity
 {
 public:

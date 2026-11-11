@@ -21,7 +21,7 @@ using namespace stacsos::kernel::sched;
 using namespace stacsos::kernel::mem;
 using namespace stacsos::kernel;
 
-core &core::this_core()
+core & core::this_core()
 {
 	auto & c = core_manager::get().get_core(core::this_core_id());
 	assert(&c != nullptr);

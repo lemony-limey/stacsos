@@ -69,11 +69,13 @@ const rsdp_descriptor* ACPI::scan_for_rsdp(uintptr_t start, uintptr_t end)
  */
 const rsdp_descriptor* ACPI::locate_rsdp()
 {
+	// Physical -> Virtual conversion here.
 	u64 ebda_address = (u64)(*(u16 *)phys_to_virt(0x40e)) << 4;
 	u64 ebda = (u64)phys_to_virt(ebda_address);
 
 	const rsdp_descriptor* ret = scan_for_rsdp((uintptr_t)ebda, (uintptr_t)ebda + 0x400);
 	if (!ret) {
+		// Physical -> Virtual conversion here.
 		ret = scan_for_rsdp((uintptr_t)phys_to_virt(0xe0000), (uintptr_t)phys_to_virt(0x100000));
 	}
 
@@ -101,6 +103,7 @@ bool ACPI::parse_madt_lapic(const madt_record_lapic* lapic_record)
 	dprintf("madt: lapic: id=%u, procid=%u, flags=%x\n", lapic_record->apic_id, lapic_record->acpi_processor_id, lapic_record->flags);
 
 	// bool bootstrap = lapic_record->apic_id == 0;
+	// The core is only registered with the core manager if the processor ID has never been seen before.
 	core_manager::get().register_core(*new x86_core(lapic_record->acpi_processor_id));
 
 	return true;
@@ -113,6 +116,7 @@ bool ACPI::parse_madt_ioapic(const madt_record_ioapic* ioapicr)
 {
 	dprintf("madt: ioapic: id=%u, addr=%p, gsi-base=%u\n", ioapicr->ioapic_id, ioapicr->ioapic_address, ioapicr->gsi_base);
 
+	// Physical -> Virtual conversion here.
 	x86_platform::get().set_ioapic(new ioapic((void *)phys_to_virt(ioapicr->ioapic_address)));
 	x86_platform::get().get_ioapic()->initialise();
 
@@ -153,6 +157,7 @@ bool ACPI::parse_mcfg(const mcfg* mcfg)
 	{
 		dprintf("mcfg: base=%p, seg=%u, st=%u\n", ba->base_address, ba->segment_group_nr, ba->starting_pci_bus);
 
+		// Physical -> Virtual conversion here.
 		device_manager::get().register_bus(*new pci_express_bus(platform_bus_, phys_to_virt(ba->base_address), ba->starting_pci_bus, ba->ending_pci_bus));
 		ba++;  // Increments the pointer by the entire size of a configuration_space_base_address_allocation structure.
 		// The while loop will exit once the pointer points past the end of the MCFG table.
@@ -194,6 +199,7 @@ bool ACPI::parse_fadt(const fadt* fadt)
 	}
 
 	dprintf("acpi: fadt: dsdt=%p\n", fadt->dsdt);
+	// Physical -> Virtual conversion here.
 	return parse_dsdt((const dsdt *)phys_to_virt(fadt->dsdt));
 }
 
@@ -275,6 +281,7 @@ void ACPI::initialise()
 
 bool ACPI::probe()
 {
+	// Physical -> Virtual conversion here.
 	const rsdt_table* rsdt = (const rsdt_table*)phys_to_virt(rsdp_->rsdt_address);
 	if (!rsdt)
 	{
@@ -290,6 +297,7 @@ bool ACPI::probe()
 	const sdt_header* hdr = nullptr;
 	for (unsigned int i = 0; i < (rsdt->header.length - sizeof(rsdt->header)) / sizeof(u32); i++)
 	{
+		// Physical -> Virtual conversion here.
 		hdr = (const sdt_header*)phys_to_virt(rsdt->sdt_pointers[i]);
 
 		// Verify ACPI checksum.

@@ -209,6 +209,7 @@ void x86_core::handle_gpf(machine_context* mc)
 }
 
 // Handle a Page Fault
+// Is this where demand paging magic happens?
 void x86_core::handle_page_fault(machine_context* mc)
 {
 	if (memory_manager::get().try_handle_page_fault(cr2::read())) {

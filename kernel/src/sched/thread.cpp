@@ -17,7 +17,7 @@ using namespace stacsos::kernel::sched;
 using namespace stacsos::kernel::mem;
 using stacsos::kernel::arch::x86::machine_context;
 
-thread::thread(process &owner, u64 ep, void *ep_arg, u64 user_stack)
+thread::thread(process & owner, u64 ep, void* ep_arg, u64 user_stack)
 	: owner_(owner)
 	, ep_(ep)
 	, arg_(ep_arg)
@@ -72,7 +72,7 @@ void thread::init_tcb()
 	tcb_.entity = this;
 	tcb_.mcontext = (machine_context *)(((uintptr_t)kernel_stack_->base_address_ptr() + stack_size) - sizeof(machine_context));
 	tcb_.cr3 = owner_.addrspace().pgtable().effective_cr3();
-	tcb_.kernel_stack = (u64)kernel_stack_->base_address_ptr() + stack_size;
+	tcb_.kernel_stack = (u64)kernel_stack_->base_address_ptr() + stack_size;  // Point to the current part of the stack?
 	tcb_.user_stack_save = 0;
 
 	// Fill in the required values for starting this task in the initial context.

@@ -58,6 +58,7 @@ private:
 	page_table_allocator & pta_;
 	page_table* pt_;
 
+	// Is this the list or regions accessible to the process?
 	list<address_space_region*> regions_;
 	u64 next_alloc_rgn_;
 };
