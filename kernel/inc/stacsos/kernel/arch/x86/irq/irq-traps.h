@@ -9,8 +9,10 @@
 
 typedef void (*irq_trap_fn_type)(void);
 
+// Does this add the number to the name of the function?
 #define DECLARE_IRQ_TRAP(__nr) extern void x86_irq_trap_##__nr(void);
 
+// 
 extern "C"
 {
 DECLARE_IRQ_TRAP(0);

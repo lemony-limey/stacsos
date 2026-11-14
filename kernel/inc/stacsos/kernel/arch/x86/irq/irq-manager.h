@@ -42,6 +42,7 @@ private:
 	// Keeps track of which entries in the IDT have already been assigned.
 	bitset<NR_IRQS> used_irq_;
 	// The handler functions associated with each entry in the IDT.
+	// Why do we need to know this? Doesn't the IDT know this?
 	irq_handler_fn handlers_[NR_IRQS];
 	// Pointers to the arguments for the handler functions.
 	void* handler_args_[NR_IRQS];

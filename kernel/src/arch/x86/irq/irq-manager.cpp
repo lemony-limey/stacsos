@@ -56,15 +56,19 @@ static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)
 	machine_context* mc = (machine_context*)mcontext;
 	auto & thread = stacsos::kernel::sched::thread::current();
 	dprintf("[%u] unhandled irq %u RIP=%p TASK=%p\n", stacsos::kernel::arch::core::this_core_id(), irq_number, mc->rip, &thread);
-	mc->dump();
+	mc->dump();  // Print the current state of the system.
 
+	// Current base pointer of the system?
+	// Traverses the stack by following the pointer while it's not null.
 	u64* ptr = (u64*)mc->rbp;
 	while (*ptr)
 	{
+		// ptr[1] (i.e., ptr + 8 bytes) is the return address
 		dprintf("Ret Addr=%p\n", ptr[1]);
-		ptr = (u64 *)ptr[0];
+		ptr = (u64 *)ptr[0];  // Dereferences the pointer and sets the dereferenced value as the new pointer.
 	}
 
+	// abort() disables interrupts and then calls "hlt", freezing the system.
 	abort();
 }
 

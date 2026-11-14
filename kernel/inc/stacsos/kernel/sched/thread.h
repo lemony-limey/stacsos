@@ -55,12 +55,12 @@ private:
 	bool is_self() const;
 	void change_state(thread_states new_state);
 
-	process & owner_;
-	u64 ep_;
-	void* arg_;
-	thread_states state_;
-	mem::page* kernel_stack_;
-	u64 user_stack_;
+	process &        owner_;
+	u64              ep_;
+	void*            arg_;
+	thread_states    state_;
+	mem::page*       kernel_stack_;
+	u64              user_stack_;
 	auto_reset_event state_changed_event_;
 };
 } // namespace stacsos::kernel::sched

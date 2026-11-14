@@ -50,13 +50,13 @@ public:
 	auto_reset_event & state_changed_event() { return state_changed_event_; }
 
 private:
-	exec_privilege priv_;
+	exec_privilege priv_;  // Either kernel or user
 	process_state state_;
 	auto_reset_event state_changed_event_;
 
-	mem::address_space* vma_;
-	list<shared_ptr<thread>> threads_;
-	u64 next_user_stack_;
+	mem::address_space* vma_;  // virtual memory address space?
+	list<shared_ptr<thread>> threads_;  // all threads associated with the current process. There should be at least 1.
+	u64 next_user_stack_;  // why "next" user stack? What about the current one?
 
 	void on_thread_stopped(thread & thread);
 };

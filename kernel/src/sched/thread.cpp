@@ -29,7 +29,9 @@ thread::thread(process & owner, u64 ep, void* ep_arg, u64 user_stack)
 	change_state(thread_states::created);
 }
 
-thread &thread::current()
+// Gets the TCB of the current schedulable entity scheduled onto the core and gets the
+// pointer to its thread handle (by casting its schhedulable_entity handle to a thread).
+thread & thread::current()
 {
 	auto current_tcb = stacsos::kernel::arch::core::this_core().get_current_tcb();
 	assert(current_tcb != nullptr);
@@ -77,6 +79,8 @@ void thread::init_tcb()
 
 	// Fill in the required values for starting this task in the initial context.
 
+	// Depending on whether the thread is executing in user or kernel mode, the
+	// descriptors will be different.
 	if (owner_.privilege() == exec_privilege::kernel) {
 		tcb_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;
 		tcb_.mcontext->ss = KERNEL_DATA_SEGMENT_SELECTOR;

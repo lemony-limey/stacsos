@@ -24,6 +24,7 @@ public:
 
 	void initialise();
 
+	// Allocate calls map.
 	void allocate_physical_irq(u32 phys_irq_nr, x86_core & target_core, irq::irq_handler_fn handler_fn, void* handler_fn_arg = nullptr);
 	void map_physical_irq(u32 phys_irq_nr, x86_core & target_core, u8 target_irq_nr);
 

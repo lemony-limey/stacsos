@@ -23,6 +23,7 @@ enum class fs_type_hint { best_guess, tarfs, fat };
 class filesystem
 {
 public:
+ // basically inodes
 	virtual fs_node & root() = 0;
 
 	virtual ~filesystem() { }
@@ -42,6 +43,8 @@ protected:
 	dev::storage::block_device & bdev_;
 };
 
+// comes fromt he first filesystem, which is empty
+// others are mounted on top of this one
 class rootfs_node : public fs_node
 {
 public:

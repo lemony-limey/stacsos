@@ -10,10 +10,11 @@
 namespace stacsos {
 typedef void*(*thread_entry_fn)(void*);
 
-struct thread_context {
-	thread_entry_fn ep_;
-	void *arg_;
-	void *result_;
+struct thread_context
+{
+	thread_entry_fn ep_; // ep = Entry Point
+	void* arg_;
+	void* result_;
 };
 
 class thread {

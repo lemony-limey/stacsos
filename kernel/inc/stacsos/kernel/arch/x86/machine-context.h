@@ -18,12 +18,17 @@ namespace stacsos::kernel::arch::x86
 {
 // Why are DS, ES, EFLAGS, R0-R7 all missing? Are they caller-saved?
 // Is this just stuff used in the calling convention?
+// Cr3 not saved because a userspace task can't modify it anyway.
 struct machine_context
 {
 	u64 gs, fs;
 	u64 r15, r14, r13, r12, r11, r10, r9, r8;
+	// Order arguments are passed is:
+	// rdi rsi rdx rcx r8 r9
+	// If the callee wants to use any of rbp, rbx, r12-15, they must be restored to old values upon return.
+	// If the return type fits in 64 bits, then it is returned in %rax
 	u64 rdi, rsi, rbp, rbx, rdx, rcx, rax;
-	u64 extra, rip, cs, rflags, rsp, ss;
+	u64 extra, rip, cs, rflags, rsp, ss;  // Reverse order of stuff that is modified when a CPU calls an interrupt handler.
 
 	void dump() const;
 } __packed;

@@ -10,7 +10,7 @@
 
 using namespace stacsos;
 
-process *process::create(const char *path, const char *args)
+process* process::create(const char* path, const char* args)
 {
 	auto rc = syscalls::start_process(path, args);
 

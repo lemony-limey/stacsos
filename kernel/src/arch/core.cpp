@@ -39,7 +39,8 @@ static void idle_thread()
 // Is this an intrinsic?
 extern "C" __noreturn void x86_return_to_task();
 
-void core::run()
+// starts running the scheduler on that core.
+void core::run()  // run_scheduler would be a better name
 {
 	// This routine MUST be called from the same core, i.e. the core that is executing must call the run for
 	// the core object that represents it.
@@ -52,22 +53,22 @@ void core::run()
 	void* idle_thread_stack = memory_manager::get().pgalloc().allocate_pages(0, page_allocation_flags::zero).to_page().base_address_ptr();
 
 	idle_thread_.mcontext = (machine_context *)idle_thread_stack;
-	idle_thread_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;
+	idle_thread_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;  // Why are these values used directly and not pulled from the TSS?
 	idle_thread_.mcontext->ss = KERNEL_DATA_SEGMENT_SELECTOR;
 	idle_thread_.mcontext->rflags = 0x202; // RSVD | IF
-	idle_thread_.mcontext->rip = (u64)idle_thread;
-	idle_thread_.mcontext->rsp = (u64)idle_thread_stack + PAGE_SIZE;
+	idle_thread_.mcontext->rip = (u64)idle_thread; // idle_thread() spins forever.
+	idle_thread_.mcontext->rsp = (u64)idle_thread_stack + PAGE_SIZE;  // Current position on the stack
 	idle_thread_.mcontext->gs = (u64)&idle_thread_;
 	idle_thread_.cr3 = memory_manager::get().root_address_space().pgtable().effective_cr3();
-	idle_thread_.kernel_stack = (u64)idle_thread_stack + PAGE_SIZE;
+	idle_thread_.kernel_stack = (u64)idle_thread_stack + PAGE_SIZE;  // In this case, the same address that rsp points to.
 
 	set_current_tcb(&idle_thread_);
 
 	dprintf("core [%d]: run\n", id());
-	local_timer().start(100); // 100 Hz
+	local_timer().start(100); // 100 Hz for preemption, uses LAPIC timer because it is in periodic mode.
 
 	// This will also enable interrupts, because the IF flag is set in rflags.
-	x86_return_to_task();
+	x86_return_to_task();  // returns into the first thread
 	__unreachable();
 }
 

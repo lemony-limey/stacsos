@@ -7,16 +7,20 @@
  */
 #pragma once
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class tcb;
 }
 
-namespace stacsos::kernel::sched::alg {
-class scheduling_algorithm {
+namespace stacsos::kernel::sched::alg
+{
+// Abstract scheduling algorithm class.
+class scheduling_algorithm
+{
 public:
-	virtual void add_to_runqueue(tcb &tcb) = 0;
-	virtual void remove_from_runqueue(tcb &tcb) = 0;
-	virtual tcb *select_next_task(tcb *current) = 0;
-	virtual const char *name() const = 0;
+	virtual void add_to_runqueue(tcb & tcb) = 0;
+	virtual void remove_from_runqueue(tcb & tcb) = 0;
+	virtual tcb* select_next_task(tcb* current) = 0;
+	virtual const char* name() const = 0;
 };
 } // namespace stacsos::kernel::sched::alg

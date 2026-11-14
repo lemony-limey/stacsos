@@ -11,6 +11,7 @@ namespace stacsos::kernel::mem
 {
 class page;
 
+// the chmod permissions essentially
 enum class region_flags { inaccessible = 0, readable = 1, writable = 2, executable = 4, readwrite = 3, all = 7 };
 
 DEFINE_ENUM_FLAG_OPERATIONS(region_flags)

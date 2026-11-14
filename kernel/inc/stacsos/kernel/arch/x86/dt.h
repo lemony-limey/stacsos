@@ -12,10 +12,10 @@ namespace stacsos::kernel::arch::x86
 
 enum class descriptor_privilege_level
 {
-	ring0 = 0,
+	ring0 = 0,  // Kernel
 	ring1 = 1,
 	ring2 = 2,
-	ring3 = 3,
+	ring3 = 3,  // Userspace applications
 };
 
 struct data_segment_descriptor

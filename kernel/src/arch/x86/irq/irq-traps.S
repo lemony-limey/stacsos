@@ -5,9 +5,36 @@
  * Copyright (c) University of St Andrews 2024
  * Tom Spink <tcs6@st-andrews.ac.uk>
  */
+ 
+
+/*
+ * .text - defined the current section as code.
+ * .globl - identifiers in partial program to be made available to other partial programs
+ * .align - how subsequent data is to be aligned (is this any data or an actual data section?)
+ * callq <addr>:
+ * 		- Pushes the address of the following instruction onto the stack (which decrements rsp%)
+ *		- Transfers control to the function that was called (setting %rip to <addr>)
+ * retq:
+ * 		- Pops address from the stack (which increments %rsp)
+ *      - Returns control back to the calling function (sets %rip to the popped address)
+ *
+ * In the case of the stack pointer, things are a bit different.
+ * pushq:
+ * 		- Pushes its argument onto the stack AND reduces the value of %rsp
+ * popq:
+ *		- Pops the stack into its argument AND increases the value of %rsp.
+ *
+ * REMEMBER: the stack grows down, so adding a value to the stack reduces %rsp.
+ *
+ * callq:
+ *		- Pushes the value of %rip onto the stack and changes %rsp and then sets %rip to the given address.
+ * retq:
+ * 		- Pops the value on the stack into %rip and changes %rsp.
+ */
 
 
 // PUSH_STATE
+// Are these pushed in the order that arguments are passed in? i.e., is this sys-V calling convention.
 .macro PUSH_STATE
 	push %rax
 	push %rcx
@@ -25,7 +52,7 @@
 	push %r14
 	push %r15
 
-#ifdef USE_FSGSBASE
+#ifdef USE_FSGSBASE  // is this a check to see if these instructions are supported?
 	rdfsbase %rax
 	push %rax
 
@@ -48,12 +75,13 @@
 
 	push %rax
 #endif
-.endm
+.endm  // End of PUSH_STATE
 
 
 // POP_STATE
+
 .macro POP_STATE
-#ifdef USE_FSGSBASE
+#ifdef USE_FSGSBASE  // what is the purpose of FSGSBASE?
 	pop %rax
 	wrgsbase %rax
 
@@ -92,10 +120,11 @@
 	pop %rdx
 	pop %rcx
 	pop %rax
-.endm
+.endm  // End of POP_STATE
 
 
 // TRAP_BEGIN
+
 .macro TRAP_BEGIN,has_arg
 .if ! \has_arg
 	push $0
@@ -103,17 +132,18 @@
 	PUSH_STATE
 
 	cmpw $0x08, 152(%rsp)
-	je 1f
+	je 1f  // Is "1f" a label or is it a floating-point 1.
 	swapgs
 1:
 
 	// Store the stack pointer (which is holding the saved context) into GS:8
 	// GS holds the current TCB, and GS:8 is a pointer to the saved context.
 	mov %rsp, %gs:8
-.endm
+.endm  // End of TRAP_BEGIN
 
 
 // TRAP_COMPLETE
+
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
 	mov %gs:8, %rsp
@@ -126,39 +156,47 @@
 	POP_STATE
 	add $8, %rsp
 	iretq
-.endm
+.endm  // End of TRAP_COMPLETE
 
+// .text defines a code section.
 .text
+// 16-bit aligned, or 16-byte aligned?. Probably byte.
 .align 16
 .globl x86_return_to_task
 .type x86_return_to_task,%function
+
 // This is what is called at the end of core::run().
 x86_return_to_task:
 	TRAP_COMPLETE
-.size x86_return_to_task,.-x86_return_to_task
+.size x86_return_to_task,.-x86_return_to_task  // here is this weird syntax again
 
+// fn IRQ_TRAP_PRE(nr: u8, has_arg: bool)
 .macro IRQ_TRAP_PRE,nr,has_arg
 .text
 .align 16
+// Does .globl create a globally visible label/identifier for this section?
 .globl x86_irq_trap_\nr
 .type x86_irq_trap_\nr, %function
 x86_irq_trap_\nr:
 	TRAP_BEGIN \has_arg
 	mov $\nr, %edi
     mov %rsp, %rsi
-.endm
+.endm  // End of IRQ_TRAP_PRE
 
+// fn IRQ_TRAP_POST(nr: u8)
 .macro IRQ_TRAP_POST,nr
 	TRAP_COMPLETE
 .size x86_irq_trap_\nr,.-x86_irq_trap_\nr
-.endm
+.endm  // End of IRQ_TRAP_POST
 
+// fn IRQ_TRAP(nr: u8, has_arg: bool)
 .macro IRQ_TRAP,nr,has_arg
 IRQ_TRAP_PRE \nr \has_arg
-	call x86_handle_irq
-IRQ_TRAP_POST \nr
-.endm
+	call x86_handle_irq  // Is there any reason call is indented but IRQ_TRAP_PRE and IRQ_TRAP_POST are not?
+IRQ_TRAP_POST \nr  // Does \nr indicate that the value of nr is to be used as an argument?
+.endm  // End of IRQ_TRAP
 
+// has_arg identifies the trap handlers that also are expecting an error code passed in.
 IRQ_TRAP 0  0
 IRQ_TRAP 1  0
 IRQ_TRAP 2  0
@@ -167,16 +205,16 @@ IRQ_TRAP 4  0
 IRQ_TRAP 5  0
 IRQ_TRAP 6  0
 IRQ_TRAP 7  0
-IRQ_TRAP 8  1
+IRQ_TRAP 8  1  // Double-fault. Always returns 0.
 IRQ_TRAP 9  0
-IRQ_TRAP 10 1
-IRQ_TRAP 11 1
-IRQ_TRAP 12 1
-IRQ_TRAP 13 1
-IRQ_TRAP 14 1
+IRQ_TRAP 10 1  // Invalid TSS.
+IRQ_TRAP 11 1  // Segment not present.
+IRQ_TRAP 12 1  // Stack-Segment Fault.
+IRQ_TRAP 13 1  // General Protection Fault
+IRQ_TRAP 14 1  // Page fault
 IRQ_TRAP 15 0
 IRQ_TRAP 16 0
-IRQ_TRAP 17 1
+IRQ_TRAP 17 1  // Alignment check
 IRQ_TRAP 18 0
 IRQ_TRAP 19 0
 IRQ_TRAP 20 0
@@ -189,9 +227,11 @@ IRQ_TRAP 26 0
 IRQ_TRAP 27 0
 IRQ_TRAP 28 0
 IRQ_TRAP 29 0
-IRQ_TRAP 30 1
+IRQ_TRAP 30 1  // Control protection exception.
 IRQ_TRAP 31 0
 
+// Everything from this point onwards has has_arg set to false, because user-defined handlers are used here.
+// Note that this is past the reserved range.
 IRQ_TRAP 32 0
 IRQ_TRAP 33 0
 IRQ_TRAP 34 0
@@ -417,9 +457,9 @@ IRQ_TRAP 253 0
 IRQ_TRAP 254 0
 IRQ_TRAP 255 0
 
-.align 16
-.globl reload_cs
-.type reload_cs,%function
+.align 16                  // 16-byte align
+.globl reload_cs           // define the name reload_cs globally
+.type reload_cs,%function  // state that the globally defined name "reload_cs" refers to a function/is a function pointer.
 reload_cs:
     // Get hold of the return RIP
     pop %rax
@@ -427,33 +467,41 @@ reload_cs:
     // Remember the stack pointer of the caller
     mov %rsp, %rcx
 
-    pushq $0x10     // SS
-    push %rcx       // RSP
+	// This is the same order that stuff is defined in machine context, which is intentional because it's the order that stuff is modified when a CPU calls an interrupt handler.
+	// pushq = push quad-word = push (4 words) = push (4 * (2 bytes)) = push 8 bytes.
+    pushq $0x10     // SS (what does this value imply?)
+    push %rcx       // RSP (rcx now contains the previous value of the stack pointer, push it to the stack. does this serve as the base pointer?)
     pushf           // RFLAGS
     pushq $0x08     // CS
     push %rax       // RIP
 
-    // Return from interrupt
+    // Return from interrupt (with a quad word return value?)
     iretq
-.size reload_cs,.-reload_cs
+.size reload_cs,.-reload_cs  // What does this mean, what does the '.' mean and what is .-reload_cs
 
-.align 16
-.globl x86_call_isr
-.type x86_call_isr,%function
+.align 16                     // 16-byte align
+.globl x86_call_isr           // Define the global name "x86_call_isr"
+.type x86_call_isr,%function  // Define "x86_call_isr" as a function
+// Call ISR = call Interrupt Service Request.
+// So is this the function that calls whatever we've defined as the handler function.
 x86_call_isr:
-	push %rbp
-	mov %rsp, %rbp
+	push %rbp       // Push the base pointer to the stack.
+	mov %rsp, %rbp  // Set the stack pointer to the current base pointer.
 
 	// Align stack pointer
 	and	$~0xf, %rsp
 
+	// Same as before with "reload_cs", but why is RIP not pushed also.
 	pushq $0x10		// KERNEL_SS
 	pushq %rbp		// RSP
 	pushfq			// RFLAGS
 	pushq $0x08		// KERNEL_CS
-	cli
+	// Interrupts are disabled during the call. This could be to prevent other interrupts from happening while the ISR is executing.
+	// Hence it is probably wise that the ISR is minimal in size.
+	cli 
+	// Is this a dereference of %rdi.
 	callq *%rdi
 
 	pop %rbp
-	ret
+	ret  // ret here and not iret or iretq.
 .size x86_call_isr,.-x86_call_isr

@@ -50,6 +50,7 @@ void ioapic::store_redir_entry(u8 irq_index, const redirection_entry & e)
 	write(configuration_register + 1, e.high);  // ioapic::write()
 }
 
+/// Allocate calls map.
 /// @brief Allocates a handler function for a given IRQ for a given core.
 /// @param phys_irq_nr 
 /// @param target_core 
@@ -61,6 +62,7 @@ void ioapic::allocate_physical_irq(u32 phys_irq_nr, x86_core & target_core, irq_
 	map_physical_irq(phys_irq_nr, target_core, allocated_irq);
 }
 
+/// Map calls store_redir_entry.
 /// @brief 
 /// @param phys_irq_nr 
 /// @param target_core 
@@ -74,6 +76,7 @@ void ioapic::map_physical_irq(u32 phys_irq_nr, x86_core & target_core, u8 target
 
 	dprintf("ioapic: map phys=%u, core=%u, target=%u\n", phys_irq_nr, target_core.id(), target_irq_nr);
 
+	// Create a blank redirection entry.
 	redirection_entry re;
 	memops::bzero(&re, sizeof(re));
 

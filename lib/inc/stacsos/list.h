@@ -117,6 +117,7 @@ public:
 		count_++;
 	}
 
+	// Does a linear scan to find the specified element.
 	void remove(elem const &elem)
 	{
 		node **slot = &elems_;
