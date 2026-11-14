@@ -179,8 +179,9 @@ template <int MAX_NR_IDT_ENTRIES> void interrupt_descriptor_table<MAX_NR_IDT_ENT
 template <int MAX_NR_IDT_ENTRIES>
 bool interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::register_interrupt_gate(int index, uintptr_t addr, u16 seg, descriptor_privilege_level dpl)
 {
-	if (index < 0 || index >= MAX_NR_IDT_ENTRIES)
+	if (index < 0 || index >= MAX_NR_IDT_ENTRIES) {
 		return false;
+	}
 
 	interrupt_gate_descriptor desc(addr, seg, dpl);
 

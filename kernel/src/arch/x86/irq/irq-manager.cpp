@@ -49,6 +49,8 @@ static irq_trap_fn_type irq_trap_functions[] = { x86_irq_trap_0, x86_irq_trap_1,
 	x86_irq_trap_241, x86_irq_trap_242, x86_irq_trap_243, x86_irq_trap_244, x86_irq_trap_245, x86_irq_trap_246, x86_irq_trap_247, x86_irq_trap_248,
 	x86_irq_trap_249, x86_irq_trap_250, x86_irq_trap_251, x86_irq_trap_252, x86_irq_trap_253, x86_irq_trap_254, x86_irq_trap_255 };
 
+// Why does this have extern "C" but also a definition? Maybe it's to say it's declared elsewhere but defined here?
+// Extern C prevents name mangling.
 extern "C" void x86_handle_irq(u8 irq_number, void* mcontext) { x86_core::this_core().irqmgr().handle_irq(irq_number, mcontext); }
 
 static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)

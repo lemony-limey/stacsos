@@ -52,13 +52,13 @@
 	push %r14
 	push %r15
 
-#ifdef USE_FSGSBASE  // is this a check to see if these instructions are supported?
+#ifdef USE_FSGSBASE  // flag for whether the rdfsbase and rsgsbase instructions are supported
 	rdfsbase %rax
 	push %rax
 
 	rdgsbase %rax
 	push %rax
-#else
+#else                // if the instructions are not supported, use the MSRs instead.
 	// FSBASE
 	movl $0xc0000100, %ecx
 	rdmsr
@@ -81,15 +81,15 @@
 // POP_STATE
 
 .macro POP_STATE
-#ifdef USE_FSGSBASE  // what is the purpose of FSGSBASE?
+#ifdef USE_FSGSBASE  // flag for whether the rdfsbase and rsgsbase instructions are supported
 	pop %rax
 	wrgsbase %rax
 
 	pop %rax
 	wrfsbase %rax
-#else
+#else                // // if the instructions are not supported, use the MSRs instead.
 	// GSBASE
-	movl $0xc0000101, %ecx
+	movl $0xc0000101, %ecx  // The hex value is the address of the MSR, either FSBase (0xC0000100), GSBase (0xC0000101) or KernelGSBase (0xC0000102).
 
 	pop %rdx
 	mov %edx, %eax
@@ -123,8 +123,7 @@
 .endm  // End of POP_STATE
 
 
-// TRAP_BEGIN
-
+// fn TRAP_BEGIN(has_arg: bool)
 .macro TRAP_BEGIN,has_arg
 .if ! \has_arg
 	push $0
@@ -142,11 +141,10 @@
 .endm  // End of TRAP_BEGIN
 
 
-// TRAP_COMPLETE
-
+// fn TRAP_COMPLETE()
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
-	mov %gs:8, %rsp
+	mov %gs:8, %rsp  // %gs:8 means byte at offset 8 from the %gs segmentation register.
 
 	cmpw $0x08, 152(%rsp)
 	je 1f
@@ -165,6 +163,7 @@
 .globl x86_return_to_task
 .type x86_return_to_task,%function
 
+// fn x86_return_to_task()
 // This is what is called at the end of core::run().
 x86_return_to_task:
 	TRAP_COMPLETE
@@ -482,7 +481,7 @@ reload_cs:
 .align 16                     // 16-byte align
 .globl x86_call_isr           // Define the global name "x86_call_isr"
 .type x86_call_isr,%function  // Define "x86_call_isr" as a function
-// Call ISR = call Interrupt Service Request.
+// Call ISR = call Interrupt Service Routine.
 // So is this the function that calls whatever we've defined as the handler function.
 x86_call_isr:
 	push %rbp       // Push the base pointer to the stack.
