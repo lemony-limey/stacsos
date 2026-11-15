@@ -19,7 +19,7 @@ namespace stacsos::kernel::sched
 {
 class schedulable_entity; 
 
-// Thread Control Block (a kind of activation context?)
+// Thread Control Block (a kind of activation context, or execution context?)
 struct tcb 
 {
 	schedulable_entity* entity; // 0x0

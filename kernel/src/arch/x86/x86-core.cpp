@@ -58,6 +58,7 @@ void x86_core::init()
 	msrs::ia32_fmask = (u64)(1 << 9); // Disable interrupts on entry to system call
 }
 
+// Write the address of the current TCB to the GS register, update the Cr3 pointer and TSS.
 void x86_core::set_current_tcb(const stacsos::kernel::sched::tcb* tcb)
 {
 	// TODO: Check if TCB is changing...

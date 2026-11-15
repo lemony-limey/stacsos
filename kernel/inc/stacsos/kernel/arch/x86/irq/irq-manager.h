@@ -25,6 +25,7 @@ public:
 	// arguments.
 	// For software interrupts, we don't know what interrupt was triggered, which
 	// is why this is necessary.
+	// It also allows us to add handlers at runtime, which is useful if the devices on the system change.
 	irq_manager(interrupt_descriptor_table<NR_IRQS> & idt)
 		: idt_(idt)
 	{}

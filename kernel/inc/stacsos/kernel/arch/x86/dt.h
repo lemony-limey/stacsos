@@ -73,7 +73,6 @@ struct data_segment_descriptor
 
 struct code_segment_descriptor
 {
-
 	code_segment_descriptor(descriptor_privilege_level dpl)
 		: ra_0_1(0)
 		, ra_0_2(0)
@@ -377,7 +376,7 @@ public:
 	void* ptr() const { return (void*)&tss_[0]; }
 
 private:
-	x86_core &owner_;
+	x86_core & owner_;
 	__aligned(16) u64 tss_[26];
 };
 } // namespace stacsos::kernel::arch::x86

@@ -244,7 +244,7 @@ void task_state_segment::reload(u16 sel)
 
 void task_state_segment::set_kernel_stack(uintptr_t stack)
 {
-	u64 *fields = (u64 *)((uintptr_t)tss_ + 4);
+	u64* fields = (u64*)((uintptr_t)tss_ + 4);
 	fields[0] = (u64)stack;
 }
 

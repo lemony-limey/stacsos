@@ -117,7 +117,7 @@ private:
 	core_status status_;
 	irq_manager irqs_;  // Create an abstraction for this in the HAL?
 
-	tcb idle_thread_;  // This will maybe be switched out with an execution contexts thing.
+	tcb idle_thread_;  // Idle thread is a TCB that is used when there is nothing currently beinge executed.
 	alg::scheduling_algorithm* sched_alg_;  // Can different cores use different scheduling algorithms?
 
 	// Also, what clock are we talking about here? Is this the LAPIC timer?

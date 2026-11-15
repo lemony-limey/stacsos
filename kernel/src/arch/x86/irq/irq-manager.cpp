@@ -67,7 +67,7 @@ static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)
 	{
 		// ptr[1] (i.e., ptr + 8 bytes) is the return address
 		dprintf("Ret Addr=%p\n", ptr[1]);
-		ptr = (u64 *)ptr[0];  // Dereferences the pointer and sets the dereferenced value as the new pointer.
+		ptr = (u64*)ptr[0];  // Dereferences the pointer and sets the dereferenced value as the new pointer.
 	}
 
 	// abort() disables interrupts and then calls "hlt", freezing the system.
@@ -86,12 +86,13 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::initialise()
 	// populate the handler functions with the unhandled handler.
 	for (int i = 0; i < idt_.NR_ENTRIES; i++)
 	{
+		// (index, handler_address, code-segment selector, privilege)
 		idt_.register_interrupt_gate(i, (uintptr_t)irq_trap_functions[i], 8, descriptor_privilege_level::ring0);
 		handlers_[i] = unhandled_interrupt;
 		handler_args_[i] = nullptr;
 	}
 
-	// Reload the IDT
+	// Reload the IDT since it's now initialised and ready for use.
 	idt_.reload();
 }
 

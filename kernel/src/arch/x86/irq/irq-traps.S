@@ -34,7 +34,7 @@
 
 
 // PUSH_STATE
-// Are these pushed in the order that arguments are passed in? i.e., is this sys-V calling convention.
+// Are these pushed in the order that arguments are passed in? i.e., is this sys-V calling convention?
 .macro PUSH_STATE
 	push %rax
 	push %rcx
@@ -51,6 +51,8 @@
 	push %r13
 	push %r14
 	push %r15
+
+// After the register values have been pushed to the stack, 
 
 #ifdef USE_FSGSBASE  // flag for whether the rdfsbase and rsgsbase instructions are supported
 	rdfsbase %rax
@@ -130,8 +132,10 @@
 .endif
 	PUSH_STATE
 
-	cmpw $0x08, 152(%rsp)
-	je 1f  // Is "1f" a label or is it a floating-point 1.
+	// Is it because it's 16-byte aligned?
+	cmpw $0x08, 152(%rsp)  // 152 = 8 * 19. 17 registers are pushed by PUSH_STATE and 1 earlier in this macro if an argument was pushed. What is on the stack right before this?
+	                       // It could be the case that the extra 8 bytes is there for alignment purposes to account for both cases (error val does or does not exist).
+	je 1f  // "1f" is a label.
 	swapgs
 1:
 
@@ -174,6 +178,7 @@ x86_return_to_task:
 .text
 .align 16
 // Does .globl create a globally visible label/identifier for this section?
+// THIS IS WHERE THE HANDLER FUNCTIONS FROM irq-traps.h ARE DEFINED.
 .globl x86_irq_trap_\nr
 .type x86_irq_trap_\nr, %function
 x86_irq_trap_\nr:
@@ -482,7 +487,7 @@ reload_cs:
 .globl x86_call_isr           // Define the global name "x86_call_isr"
 .type x86_call_isr,%function  // Define "x86_call_isr" as a function
 // Call ISR = call Interrupt Service Routine.
-// So is this the function that calls whatever we've defined as the handler function.
+// So is this the function that calls whatever we've defined as the handler function?
 x86_call_isr:
 	push %rbp       // Push the base pointer to the stack.
 	mov %rsp, %rbp  // Set the stack pointer to the current base pointer.
@@ -490,7 +495,7 @@ x86_call_isr:
 	// Align stack pointer
 	and	$~0xf, %rsp
 
-	// Same as before with "reload_cs", but why is RIP not pushed also.
+	// Same as before with "reload_cs", but why is RIP not pushed also?
 	pushq $0x10		// KERNEL_SS
 	pushq %rbp		// RSP
 	pushfq			// RFLAGS
@@ -498,7 +503,7 @@ x86_call_isr:
 	// Interrupts are disabled during the call. This could be to prevent other interrupts from happening while the ISR is executing.
 	// Hence it is probably wise that the ISR is minimal in size.
 	cli 
-	// Is this a dereference of %rdi.
+	// Is this a dereference of %rdi, which contains the first function argument, as defined by the SysV calling convention.
 	callq *%rdi
 
 	pop %rbp

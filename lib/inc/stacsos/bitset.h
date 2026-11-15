@@ -34,6 +34,7 @@ public:
 
 	bitref operator[](u64 index) { return bitref { words_[index / bits_per_word], index % bits_per_word }; }
 
+	// Big-endian or little-endian?
 	u64 find_first_zero()
 	{
 		for (u64 i = 0; i < nr_words; i++)
@@ -53,6 +54,7 @@ public:
 	bitset() { memops::bzero(words_, sizeof(words_)); }
 
 private:
+	// bit_word = unsigned long = u32
 	bit_word words_[nr_words];
 };
 } // namespace stacsos

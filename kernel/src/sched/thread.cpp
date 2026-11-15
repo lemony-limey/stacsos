@@ -50,10 +50,12 @@ void thread::stop()
 void thread::suspend() { change_state(thread_states::suspended); }
 void thread::resume() { change_state(thread_states::runnable); }
 
-void thread::task_entry_trampoline(thread *thread)
+// What is a task entry "trampoline"?
+void thread::task_entry_trampoline(thread* thread)
 {
 	// If there is an entry point, then run it and stop the task once it has completed.
-	if (thread->ep_) {
+	if (thread->ep_)
+	{
 		auto epfn = (void (*)(void *))thread->ep_;
 		epfn(thread->arg_);
 		thread->stop();
@@ -91,7 +93,8 @@ void thread::init_tcb()
 
 	tcb_.mcontext->rflags = 0x202; // RSVD | IF
 
-	if (owner_.privilege() == exec_privilege::kernel) {
+	if (owner_.privilege() == exec_privilege::kernel)
+	{
 		tcb_.mcontext->rip = (u64)task_entry_trampoline; // The actual entry point for a kernel task is the
 														 // trampoline.  This is so that tasks entry points can return, and
 														 // they won't return into "nothing", instead we'll take control back
@@ -104,7 +107,9 @@ void thread::init_tcb()
 
 		// The GS register needs to point to the TCB, so that the kernel thread can manipulate itself.
 		tcb_.mcontext->gs = (u64)&tcb_;
-	} else {
+	} 
+	else
+	{
 		tcb_.mcontext->rip = ep_;
 		tcb_.mcontext->rdi = (u64)arg_;
 		tcb_.mcontext->rsp = user_stack_;

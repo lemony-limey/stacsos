@@ -142,7 +142,7 @@ public:
 class gsbase
 {
 public:
-#ifdef USE_FSGSBASE
+#ifdef USE_FSGSBASE  // Indicates that the "rdgdbase" and "wrgsbase" operations are supported.
 	static u64 read()
 	{
 		u64 gsbase;

@@ -50,17 +50,31 @@ void core::run()  // run_scheduler would be a better name
 	}
 
 	// Initialise the IDLE thread, for doing nothing when there are no tasks to run.
-	void* idle_thread_stack = memory_manager::get().pgalloc().allocate_pages(0, page_allocation_flags::zero).to_page().base_address_ptr();
+	void* idle_thread_stack = memory_manager::get()
+		.pgalloc()
+		.allocate_pages(0, page_allocation_flags::zero)
+		.to_page()
+		.base_address_ptr();
 
+	// A zeroed page is allocated for the stack.
 	idle_thread_.mcontext = (machine_context *)idle_thread_stack;
-	idle_thread_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;  // Why are these values used directly and not pulled from the TSS?
+	// The idle thread runs in kernel mode.
+	idle_thread_.mcontext->cs = KERNEL_CODE_SEGMENT_SELECTOR;
 	idle_thread_.mcontext->ss = KERNEL_DATA_SEGMENT_SELECTOR;
-	idle_thread_.mcontext->rflags = 0x202; // RSVD | IF
-	idle_thread_.mcontext->rip = (u64)idle_thread; // idle_thread() spins forever.
-	idle_thread_.mcontext->rsp = (u64)idle_thread_stack + PAGE_SIZE;  // Current position on the stack
-	idle_thread_.mcontext->gs = (u64)&idle_thread_;
-	idle_thread_.cr3 = memory_manager::get().root_address_space().pgtable().effective_cr3();
-	idle_thread_.kernel_stack = (u64)idle_thread_stack + PAGE_SIZE;  // In this case, the same address that rsp points to.
+	idle_thread_.mcontext->rflags = 0x202; // RSVD | IF. RSVD = . IF = .
+	// idle_thread() spins forever. %rip points here as all the intructions in this function will be executing relative to here.
+	idle_thread_.mcontext->rip = (u64)idle_thread; 
+	// The top of the stack is the starting position, because the stack grows down.
+	idle_thread_.mcontext->rsp = (u64)idle_thread_stack + PAGE_SIZE;  
+	// GS holds a pointer to the current TCB in stacsos.
+	idle_thread_.mcontext->gs = (u64)&idle_thread_;  
+	// What is "effective" cr3? Is this virtual, or is it "effective" because it's what the process sees?
+	idle_thread_.cr3 = memory_manager::get()
+		.root_address_space()
+		.pgtable()
+		.effective_cr3();  
+	// In this case, the same address that rsp points to, because this is operating in kernel mode.
+	idle_thread_.kernel_stack = (u64)idle_thread_stack + PAGE_SIZE;  
 
 	set_current_tcb(&idle_thread_);
 
@@ -79,6 +93,8 @@ void core::schedule()
 	tcb* current = get_current_tcb();
 	u64 now = __builtin_ia32_rdtsc();
 
+	// If the current tcb address in GS is not null, update the timer stats.
+	// This is used in scheduling later on.
 	if (current)
 	{
 		// Update the current task's runtime.

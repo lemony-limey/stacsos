@@ -35,6 +35,7 @@ void sleeper::do_sleep(u64 wakeup_deadline)
 	asm volatile("int $0xff");
 }
 
+// Called every time a timer interrupt occurs.
 void sleeper::check_wakeup()
 {
 	u64 ref_time = x86_core::this_core().local_tsc().read();
