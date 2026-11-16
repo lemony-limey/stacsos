@@ -15,6 +15,6 @@ using namespace stacsos::kernel::arch;
 
 // TODO: support multicore.
 
-void scheduler::add_to_schedule(schedulable_entity &e) { core_manager::get().get_core(0).add_to_runqueue(*e.get_tcb()); }
+void scheduler::add_to_schedule(schedulable_entity & e) { core_manager::get().get_core(0).add_to_runqueue(*e.get_tcb()); }
 
-void scheduler::remove_from_schedule(schedulable_entity &e) { core_manager::get().get_core(0).remove_from_runqueue(*e.get_tcb()); }
+void scheduler::remove_from_schedule(schedulable_entity & e) { core_manager::get().get_core(0).remove_from_runqueue(*e.get_tcb()); }

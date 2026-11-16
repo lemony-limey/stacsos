@@ -11,9 +11,9 @@
 .type syscall_entry,%function
 syscall_entry:
     // Activate KERNEL STACK
-    swapgs
-    mov %rsp, %gs:0x20
-    mov %gs:0x18, %rsp
+    swapgs  // Switch from user TCB to kernel TCB.
+    mov %rsp, %gs:0x20  // Copy tcb.user_save_stack address to the stack pointer register.
+    mov %gs:0x18, %rsp  // Copy stack pointer address (which contains tcb.user_save_stack) into the tcb.kernel_stack address field, since we're in kernel mode.
 
     // Save user context - don't need to save RAX and RDX, as they are return values.
 	push %rcx
@@ -60,8 +60,8 @@ syscall_entry:
 	pop %rcx	// This happens to contain the return IP
 
     // Restore USER STACK
-    mov %gs:0x20, %rsp
-    swapgs
+    mov %gs:0x20, %rsp  // Move stack pointer address into tcb.user_stack_save field.
+    swapgs  // Swap back to user TCB.
 
     sysretq
 .size syscall_entry,.-syscall_entry

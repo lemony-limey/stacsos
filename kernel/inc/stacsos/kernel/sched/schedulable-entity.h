@@ -22,10 +22,10 @@ class schedulable_entity;
 // Thread Control Block (a kind of activation context, or execution context?)
 struct tcb 
 {
-	schedulable_entity* entity; // 0x0
+	schedulable_entity* entity; // 0x0 - Handle to the thread. Is a pointer.
 	stacsos::kernel::arch::x86::machine_context* mcontext; // 0x8
 	u64 cr3; // 0x10  - Indicates the (physical) address of the top level page table.
-	u64 kernel_stack; // 0x18
+	u64 kernel_stack;    // 0x18
 	u64 user_stack_save; // 0x20  // the previous bottom of the user stack
 	// The next 3 values are used for scheduling purposes.
 	u64 start_time;	// 0x28

@@ -27,8 +27,8 @@ struct machine_context
 	// rdi rsi rdx rcx r8 r9
 	// If the callee wants to use any of rbp, rbx, r12-15, they must be restored to old values upon return.
 	// If the return type fits in 64 bits, then it is returned in %rax
-	u64 rdi, rsi, rbp, rbx, rdx, rcx, rax;
-	u64 extra, rip, cs, rflags, rsp, ss;  // Reverse order of stuff that is modified when a CPU calls an interrupt handler.
+	u64 rdi, rsi, rbp, rbx, rdx, rcx, rax; // Order of arguments for SysV
+	u64 extra, rip, cs, rflags, rsp, ss;   // Reverse order of stuff that is modified when a CPU calls an interrupt handler.
 
 	void dump() const;
 } __packed;

@@ -30,13 +30,13 @@ thread::thread(process & owner, u64 ep, void* ep_arg, u64 user_stack)
 }
 
 // Gets the TCB of the current schedulable entity scheduled onto the core and gets the
-// pointer to its thread handle (by casting its schhedulable_entity handle to a thread).
+// pointer to its thread handle (by casting its schedulable_entity handle to a thread).
 thread & thread::current()
 {
 	auto current_tcb = stacsos::kernel::arch::core::this_core().get_current_tcb();
 	assert(current_tcb != nullptr);
 
-	return *(thread *)(current_tcb->entity);
+	return *(thread*)(current_tcb->entity);
 }
 
 bool thread::is_self() const { return &thread::current() == this; }
@@ -51,12 +51,12 @@ void thread::suspend() { change_state(thread_states::suspended); }
 void thread::resume() { change_state(thread_states::runnable); }
 
 // What is a task entry "trampoline"?
-void thread::task_entry_trampoline(thread* thread)
+void thread::task_entry_trampoline(thread* thread) // -> !
 {
 	// If there is an entry point, then run it and stop the task once it has completed.
 	if (thread->ep_)
 	{
-		auto epfn = (void (*)(void *))thread->ep_;
+		auto epfn = (void (*)(void*))thread->ep_;
 		epfn(thread->arg_);
 		thread->stop();
 	}
@@ -69,7 +69,10 @@ void thread::task_entry_trampoline(thread* thread)
 void thread::init_tcb()
 {
 	// Allocate an 8k stack.
-	kernel_stack_ = &memory_manager::get().pgalloc().allocate_pages(stack_size_order, page_allocation_flags::zero).to_page();
+	kernel_stack_ = &memory_manager::get()
+		.pgalloc()
+		.allocate_pages(stack_size_order, page_allocation_flags::zero)
+		.to_page();
 
 	// Set the pointer to the task object in the task control block, and pop the initial
 	// machine context into the stack.

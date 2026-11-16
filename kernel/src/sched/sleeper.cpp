@@ -22,6 +22,7 @@ void sleeper::sleep_ms(u64 duration_ms)
 	do_sleep(ref_time + ((duration_ms * tsc.frequency()) / 1000));
 }
 
+// Suspend the current thread for some amount of time. It will be woken after the TSC deadline has passed.
 void sleeper::do_sleep(u64 wakeup_deadline)
 {
 	thread* ct = &thread::current();
@@ -36,12 +37,14 @@ void sleeper::do_sleep(u64 wakeup_deadline)
 }
 
 // Called every time a timer interrupt occurs.
+// If the deadline has passed, resume the thread.
+// Can use while let in the Rust version.
 void sleeper::check_wakeup()
 {
 	u64 ref_time = x86_core::this_core().local_tsc().read();
 
 	// TODO: some kind of priority queue
-	// TODO: Priority queue ordered by nearest wakeup deadline.
+	// TODO: Priority queue ordered by nearest wakeup deadline, so it would be a min heap.
 	list<sleeping_thread *> resumed;
 	for (auto sleeping : sleeping_)
 	{

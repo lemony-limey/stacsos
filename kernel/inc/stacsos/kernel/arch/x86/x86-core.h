@@ -45,7 +45,7 @@ public:
 	irq::irq_manager<256> & irqmgr() { return irqs_; }
 	const irq::irq_manager<256> & irqmgr() const { return irqs_; }
 
-	virtual void set_current_tcb(const tcb *tcb) override;
+	virtual void set_current_tcb(const tcb* tcb) override;
 	virtual tcb* get_current_tcb() override;
 
 	x2apic & lapic() { return lapic_; }

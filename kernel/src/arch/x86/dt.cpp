@@ -233,13 +233,14 @@ task_state_segment::task_state_segment(x86_core & owner)
 	memops::bzero(tss_, sizeof(tss_));
 }
 
-void task_state_segment::reload(u16 sel)
+// Argument is the TSS selector.
+void task_state_segment::reload(u16 gdt_sel)
 {
 	if (owner_.id() != x86_core::this_core_id()) {
 		panic("not allowed to remotely reload descriptor tables");
 	}
 
-	asm volatile("ltr %0" ::"r"(sel));
+	asm volatile("ltr %0" ::"r"(gdt_sel));
 }
 
 void task_state_segment::set_kernel_stack(uintptr_t stack)

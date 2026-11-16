@@ -109,7 +109,7 @@ template <int NR_IRQS> void irq_manager<NR_IRQS>::reserve_irq(u8 irq_number, irq
 	// Check if the IRQ number has already been reserved previously.
 	if (used_irq_[irq_number])
 	{
-		panic("IRQ # already reserved");
+		panic("IRQ # already reserved, overlapping allocations should not occur");
 	}
 
 	// Reserve the IRQ number and assign it (i.e., write the handler info to the metadata structure).

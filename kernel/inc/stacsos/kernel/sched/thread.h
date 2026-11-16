@@ -56,7 +56,7 @@ private:
 	void change_state(thread_states new_state);
 
 	process &        owner_;
-	u64              ep_;
+	u64              ep_;  // Entry point, is a function that will be called within task_entry_trampoline().
 	void*            arg_;
 	thread_states    state_;
 	mem::page*       kernel_stack_;

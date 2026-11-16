@@ -95,11 +95,11 @@ void x86_core::populate_dt()
 	gdt_.add_code_segment(descriptor_privilege_level::ring0); // 0x08
 	gdt_.add_data_segment(descriptor_privilege_level::ring0); // 0x10
 
-	// User Code + Data
+	// User Data + Code
 	gdt_.add_data_segment(descriptor_privilege_level::ring3); // 0x18
 	gdt_.add_code_segment(descriptor_privilege_level::ring3); // 0x20
 
-	// TSS descriptor
+	// TSS descriptor, the 6th descriptor in the GDT.
 	gdt_.add_tss(tss_); // 0x28
 
 	gdt_.reload();
@@ -111,7 +111,10 @@ void x86_core::populate_dt()
 
 	// The TSS is needed for swapping stacks if we're going into USER mode.
 	tss_.set_kernel_stack(0);
-	tss_.reload(0x28);
+	// 0x28 is the offset here that describes the position in the GDT where the TSS is described.
+	// In this case, the TSS is decribed by the 6th entry in the GDT, hence why the offset 0x28 is passed in.
+	// https://wiki.osdev.org/Task_State_Segment (TSS in software multitasking section)
+	tss_.reload(0x28);  
 }
 
 bool x86_core::remote_run() { return false; }

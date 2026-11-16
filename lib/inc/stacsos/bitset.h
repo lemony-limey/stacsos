@@ -39,19 +39,24 @@ public:
 	{
 		for (u64 i = 0; i < nr_words; i++)
 		{
+			// Binary negation of the current u32. We need the cleared bits set, and vice versa, to look for the bits set.
 			bit_word tmp = ~words_[i];
 
+			// FFSLL = Find First bit Set in word (Long Long variant)
 			int first_set = __builtin_ffsll(tmp);
+			// 0 is returned if no bits are set in first_set. Otherwise, the position of the bit (i.e., the index + 1) is returned.
 			if (first_set != 0)
 			{
+				// Return the index of the bit.
 				return (u64)(first_set - 1) + (i * sizeof(bit_word) * 8);
 			}
 		}
 
+		// Return the max value, which will be out of range.
 		return ~0ull;
 	}
 
-	bitset() { memops::bzero(words_, sizeof(words_)); }
+	void bitset() { memops::bzero(words_, sizeof(words_)); }
 
 private:
 	// bit_word = unsigned long = u32
