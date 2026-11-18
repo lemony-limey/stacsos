@@ -33,7 +33,7 @@ struct tcb
 	u64 run_time;	// 0x38
 } __packed;
 
-// A task/thread. Represents a unit of work (i.e., a thread) that can be executed when in context.
+// Superclass of thread. Represents a unit of work (i.e., a thread) that can be executed when in context.
 // A wrapper around a tcb and the core the unit of work is associated with.
 class schedulable_entity
 {

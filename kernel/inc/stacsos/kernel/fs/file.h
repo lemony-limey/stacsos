@@ -55,6 +55,6 @@ public:
 
 private:
 	u64 size_;
-	u64 cur_offset_;
+	u64 cur_offset_;  // Is this the current offset of a pointer within it, or the starting address of the file?
 };
 } // namespace stacsos::kernel::fs

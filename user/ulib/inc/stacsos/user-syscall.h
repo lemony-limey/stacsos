@@ -11,13 +11,13 @@
 
 namespace stacsos
 {
-struct rw_result
+struct rw_result  // RW = read/write
 {
 	syscall_result_code code;
 	u64 length;
 };
 
-struct fa_result
+struct fa_result  // FA = file access?
 {
 	syscall_result_code code;
 	u64 id;

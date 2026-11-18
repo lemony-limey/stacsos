@@ -52,7 +52,7 @@
 	push %r14
 	push %r15
 
-// After the register values have been pushed to the stack, 
+// After the register values have been pushed to the stack, push the values of fsbase and gsbase to the stack also.
 
 #ifdef USE_FSGSBASE  // flag for whether the rdfsbase and rsgsbase instructions are supported
 	rdfsbase %rax
@@ -128,15 +128,19 @@
 // fn TRAP_BEGIN(has_arg: bool)
 .macro TRAP_BEGIN,has_arg
 .if ! \has_arg
-	push $0
+	push $0  // $0 is an immediate value. This is pushed if there is no argument, interestingly enough. Serves as a fake error code.
 .endif
 	PUSH_STATE
 
 	// Is it because it's 16-byte aligned?
 	cmpw $0x08, 152(%rsp)  // 152 = 8 * 19. 17 registers are pushed by PUSH_STATE and 1 earlier in this macro if an argument was pushed. What is on the stack right before this?
 	                       // It could be the case that the extra 8 bytes is there for alignment purposes to account for both cases (error val does or does not exist).
+						   // Could the 19th thing be the IRQ number, or is this stored in rdi?
+						   // Is it because the stack pointer has already been decremented again?
+						   // The IRQ vector is pushed before the other crap. If the vector is 8, a double fault occurred.
+						   // https://wiki.osdev.org/Interrupt_Descriptor_Table#IDT_items
 	je 1f  // "1f" is a label.
-	swapgs
+	swapgs // Swap GSBase and KernelGSBase only if a double fault did not occur, because if it did we're already in kernel space.
 1:
 
 	// Store the stack pointer (which is holding the saved context) into GS:8
@@ -148,17 +152,18 @@
 // fn TRAP_COMPLETE()
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
-	mov %gs:8, %rsp  // %gs:8 means byte at offset 8 from the %gs segmentation register.
+	mov %gs:8, %rsp  // %gs:8 means offset 8 from the %gs segmentation register, which is offset 8 of the current TCB (which is the machine context).
 
-	cmpw $0x08, 152(%rsp)
-	je 1f
+	// CMPW will set stuff in RFLAGS depending on the result. If the value within *(%rsp + 152) is 8, jump to label 1, thus avoiding swapgs.
+	cmpw $0x08, 152(%rsp)  // Compare IRQ vector to see if it's a double fault. https://wiki.osdev.org/Interrupt_Descriptor_Table#IDT_items
+	je 1f  // Do not execute swapgs if we've just finished handling a double fault, because we'll still be in kernel space when we return.
 	swapgs
 1:
-
 	POP_STATE
-	add $8, %rsp
+	add $8, %rsp  // Ignores the $0 value pushed if there was no argument passed.
 	iretq
 .endm  // End of TRAP_COMPLETE
+
 
 // .text defines a code section.
 .text
@@ -167,11 +172,13 @@
 .globl x86_return_to_task
 .type x86_return_to_task,%function
 
+
 // fn x86_return_to_task()
 // This is what is called at the end of core::run().
 x86_return_to_task:
 	TRAP_COMPLETE
 .size x86_return_to_task,.-x86_return_to_task  // here is this weird syntax again
+
 
 // fn IRQ_TRAP_PRE(nr: u8, has_arg: bool)
 .macro IRQ_TRAP_PRE,nr,has_arg
@@ -183,9 +190,10 @@ x86_return_to_task:
 .type x86_irq_trap_\nr, %function
 x86_irq_trap_\nr:
 	TRAP_BEGIN \has_arg
-	mov $\nr, %edi
-    mov %rsp, %rsi
+	mov $\nr, %edi  // first arg (IRQ number)
+    mov %rsp, %rsi  // second arg (machine context I think)
 .endm  // End of IRQ_TRAP_PRE
+
 
 // fn IRQ_TRAP_POST(nr: u8)
 .macro IRQ_TRAP_POST,nr
@@ -193,12 +201,14 @@ x86_irq_trap_\nr:
 .size x86_irq_trap_\nr,.-x86_irq_trap_\nr
 .endm  // End of IRQ_TRAP_POST
 
+
 // fn IRQ_TRAP(nr: u8, has_arg: bool)
 .macro IRQ_TRAP,nr,has_arg
-IRQ_TRAP_PRE \nr \has_arg
-	call x86_handle_irq  // Is there any reason call is indented but IRQ_TRAP_PRE and IRQ_TRAP_POST are not?
-IRQ_TRAP_POST \nr  // Does \nr indicate that the value of nr is to be used as an argument?
+	IRQ_TRAP_PRE \nr \has_arg
+	call x86_handle_irq  // Args are supplied by IRQ_TRAP_PRE
+	IRQ_TRAP_POST \nr 
 .endm  // End of IRQ_TRAP
+
 
 // has_arg identifies the trap handlers that also are expecting an error code passed in.
 IRQ_TRAP 0  0
@@ -464,7 +474,7 @@ IRQ_TRAP 255 0
 .align 16                  // 16-byte align
 .globl reload_cs           // define the name reload_cs globally
 .type reload_cs,%function  // state that the globally defined name "reload_cs" refers to a function/is a function pointer.
-reload_cs:
+reload_cs:  // Reload code segment.
     // Get hold of the return RIP
     pop %rax
 

@@ -342,7 +342,7 @@ template <int MAX_NR_IDT_ENTRIES> class interrupt_descriptor_table : public desc
 public:
 	static constexpr int NR_ENTRIES = MAX_NR_IDT_ENTRIES;
 
-	interrupt_descriptor_table(x86_core &owner);
+	interrupt_descriptor_table(x86_core & owner);
 
 	void reload() override;
 
@@ -369,7 +369,7 @@ class task_state_segment
 public:
 	task_state_segment(x86_core & owner);
 
-	void reload(u16 sel);
+	void reload(u16 gdt_sel);
 
 	void set_kernel_stack(uintptr_t stack);
 

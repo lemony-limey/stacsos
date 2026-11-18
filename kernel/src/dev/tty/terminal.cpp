@@ -35,10 +35,10 @@ void terminal::write_char(unsigned char ch, u8 attr)
 	}
 }
 
-void terminal::write(const void *buffer, size_t size)
+void terminal::write(const void* buffer, size_t size)
 {
-	const u8 *cur = (const u8 *)buffer;
-	const u8 *end = cur + size;
+	const u8* cur = (const u8*)buffer;
+	const u8* end = cur + size;
 
 	while (cur < end) {
 		if (*cur == '\e') {
@@ -51,12 +51,12 @@ void terminal::write(const void *buffer, size_t size)
 	}
 }
 
-void terminal::read(void *raw_buffer, size_t size)
+void terminal::read(void* raw_buffer, size_t size)
 {
 	if (size == 0)
 		return;
 
-	u8 *buffer = (u8 *)raw_buffer;
+	u8* buffer = (u8*)raw_buffer;
 	size_t n = 0;
 	while (n < size) {
 
@@ -96,7 +96,7 @@ public:
 	}
 
 private:
-	terminal &t_;
+	terminal & t_;
 };
 
 shared_ptr<file> terminal::open_as_file() { return shared_ptr<file>(new terminal_file(*this)); }

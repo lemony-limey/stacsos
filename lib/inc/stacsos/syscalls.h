@@ -22,10 +22,10 @@ enum class syscall_numbers
 	exit = 0,
 	open = 1,
 	close = 2,
-	read = 3,
-	pread = 4,
-	write = 5,
-	pwrite = 6,
+	read = 3,   // Read and advance file pointer
+	pread = 4,  // Read, but don't advance file pointer
+	write = 5,  // Write and advance file pointer
+	pwrite = 6, // Write, but don't advance file pointer
 	set_fs = 7,
 	set_gs = 8,
 	alloc_mem = 9,

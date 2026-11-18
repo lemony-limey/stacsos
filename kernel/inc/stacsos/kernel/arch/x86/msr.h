@@ -154,7 +154,7 @@ public:
 	static wrapped_msr<msr_indicies::IA32_TSC_AUX> ia32_tsc_aux;
 
 	static wrapped_msr<msr_indicies::STAR> ia32_star;
-	static wrapped_msr<msr_indicies::LSTAR> ia32_lstar;
+	static wrapped_msr<msr_indicies::LSTAR> ia32_lstar;  // %rip is loaded from here when FRED transitions are not enabled for syscalls.
 	static wrapped_msr<msr_indicies::SFMASK> ia32_fmask;
 
 	static wrapped_msr<msr_indicies::IA32_VMX_BASIC> ia32_vmx_basic;

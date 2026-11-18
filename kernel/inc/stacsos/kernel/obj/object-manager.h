@@ -52,6 +52,7 @@ public:
 		return register_object(owner, new file_object(allocate_id(owner), file));
 	}
 
+	// A userspace handle to a process?
 	shared_ptr<object> create_process_object(sched::process & owner, shared_ptr<sched::process> proc)
 	{
 		return register_object(owner, new process_object(allocate_id(owner), proc));

@@ -16,7 +16,7 @@ void vfs::init()
 	//
 }
 
-fs_node *vfs::lookup(const char *path)
+fs_node* vfs::lookup(const char *path)
 {
 	// dprintf("vfs: lookup '%s'\n", path);
 

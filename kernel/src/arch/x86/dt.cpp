@@ -207,7 +207,9 @@ template <int MAX_NR_IDT_ENTRIES>
 bool interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::register_trap_gate(int index, uintptr_t addr, u16 seg, descriptor_privilege_level dpl)
 {
 	if (index >= MAX_NR_IDT_ENTRIES)
+	{
 		return false;
+	}
 
 	trap_gate_descriptor desc(addr, seg, dpl);
 
@@ -233,7 +235,7 @@ task_state_segment::task_state_segment(x86_core & owner)
 	memops::bzero(tss_, sizeof(tss_));
 }
 
-// Argument is the TSS selector.
+// Argument is the GDT selector for where the TSS is.
 void task_state_segment::reload(u16 gdt_sel)
 {
 	if (owner_.id() != x86_core::this_core_id()) {

@@ -38,15 +38,16 @@ shared_ptr<process> process_manager::create_kernel_process(continuation_fn cfn)
 	return kernel_process_ptr;
 }
 
-shared_ptr<process> process_manager::create_process(const char* path, const char* args)
+// Takes a path to a binary.
+shared_ptr<process> process_manager::create_process(const char* path_to_executable, const char* args)
 {
-	auto* binary = stacsos::kernel::fs::vfs::get().lookup(path);
+	auto* binary = stacsos::kernel::fs::vfs::get().lookup(path_to_executable);
 	if (!binary) {
-		dprintf("pm: binary '%s' not found\n", path);
+		dprintf("pm: binary '%s' not found\n", path_to_executable);
 		return nullptr;
 	}
 
-	dprintf("pm: found binary '%s'\n", path);
+	dprintf("pm: found binary '%s'\n", path_to_executable);
 
 	auto file = binary->open();
 	if (!file) {
@@ -111,7 +112,7 @@ shared_ptr<process> process_manager::create_process(const char* path, const char
 
 	proc->create_thread(ehdr->e_entry, (void*)data_page->base);
 
-	auto pp = shared_ptr(proc);
+	auto pp = shared_ptr(proc);  // pp = process pointer?
 	active_processes_.append(pp);
 
 	return pp;

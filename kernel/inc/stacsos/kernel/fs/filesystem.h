@@ -23,7 +23,7 @@ enum class fs_type_hint { best_guess, tarfs, fat };
 class filesystem
 {
 public:
- // basically inodes
+	// basically inodes
 	virtual fs_node & root() = 0;
 
 	virtual ~filesystem() { }

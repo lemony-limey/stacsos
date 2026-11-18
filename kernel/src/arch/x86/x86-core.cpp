@@ -21,6 +21,7 @@ using namespace stacsos::kernel::arch::x86;
 using namespace stacsos::kernel::mem;
 using namespace stacsos::kernel::sched;
 
+// This symbol is defined in "syscall.S"
 extern "C" void syscall_entry();
 
 void x86_core::init()

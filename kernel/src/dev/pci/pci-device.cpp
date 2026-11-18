@@ -36,7 +36,7 @@ void pci_device::configure()
 
 	switch (config().vendor_id())
 	{
-		case 0x1234:
+		case 0x1234:  // QEMU Standard VGA
 			switch (config().device_id())
 			{
 				case 0x1111:
@@ -52,7 +52,7 @@ void pci_device::configure()
 			}
 			break;
 
-		case 0x1af4:
+		case 0x1af4:  // VirtIO
 			/*switch (config().device_id()) {
 			case 0x1000: {
 				auto *tpt = new virtio_pci_transport(*this);
@@ -73,7 +73,7 @@ void pci_device::configure()
 
 			break;
 
-		case 0x8086:
+		case 0x8086:  // AHCI controller for SATA.
 			switch (config().device_id())
 			{
 				case 0x2922:
@@ -105,6 +105,7 @@ void pci_device::register_msi(irq_handler_fn handler, void* arg)
 		{
 			dprintf("pci: found msi capability\n");
 
+			// Put the handler into the IDT for the current core.
 			u8 irqnr = x86_core::this_core().irqmgr().allocate_irq(handler, arg);
 
 			u16 msi_ctrl = config_.read_config_value<u16>(cap.offset + 2);
