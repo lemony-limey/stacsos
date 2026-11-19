@@ -11,11 +11,13 @@
 #include <stacsos/kernel/mem/page-table.h>
 #include <stacsos/list.h>
 
-namespace stacsos::kernel::mem {
+namespace stacsos::kernel::mem
+{
 class page_table_allocator;
 class memory_manager;
 
-class address_space {
+class address_space
+{
 	friend class memory_manager;
 
 public:
@@ -34,7 +36,7 @@ public:
 	address_space_region* add_region(u64 base, u64 size, region_flags flags, bool allocate);
 	void remove_region(u64 base, u64 size, region_flags flags);
 
-	address_space_region *get_region_from_address(u64 address)
+	address_space_region* get_region_from_address(u64 address)
 	{
 		for (address_space_region* rgn : regions_) {
 			if (address >= rgn->base && address < (rgn->base + rgn->size)) {
@@ -55,10 +57,10 @@ private:
 	{
 	}
 
-	page_table_allocator & pta_;
+	page_table_allocator & pta_;  // Heap allocator? Or special allocator for entire page tables?
 	page_table* pt_;
 
-	// Is this the list or regions accessible to the process?
+	// Is this the list of regions accessible to the process?
 	list<address_space_region*> regions_;
 	u64 next_alloc_rgn_;
 };

@@ -165,8 +165,9 @@ __noreturn void main(const char* cmdline)
 	// Initialise the process manager, so we can start running threads.
 	stacsos::kernel::sched::process_manager::get().init();
 
-	// Create the kernel process, and start it.
+	// Create the (one and only?) kernel process, and start it.
 	auto kp = stacsos::kernel::sched::process_manager::get().create_kernel_process(continue_main);
+	// Marks process as started, all of its' threads as runnable, and triggers the state change hook.
 	kp->start();
 
 	main_logger.log(log_level::info, "continuing in kernel process");

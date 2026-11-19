@@ -135,11 +135,9 @@
 	// Is it because it's 16-byte aligned?
 	cmpw $0x08, 152(%rsp)  // 152 = 8 * 19. 17 registers are pushed by PUSH_STATE and 1 earlier in this macro if an argument was pushed. What is on the stack right before this?
 	                       // It could be the case that the extra 8 bytes is there for alignment purposes to account for both cases (error val does or does not exist).
-						   // Could the 19th thing be the IRQ number, or is this stored in rdi?
-						   // Is it because the stack pointer has already been decremented again?
-						   // The IRQ vector is pushed before the other crap. If the vector is 8, a double fault occurred.
+						   // The kernel code selector in the GDT is at address 0x08. We know we're in kernel mode if the current segment is a kernel one.
 						   // https://wiki.osdev.org/Interrupt_Descriptor_Table#IDT_items
-	je 1f  // "1f" is a label.
+	je 1f  // "1" is a label, "f" indicates that the jump is forwards.
 	swapgs // Swap GSBase and KernelGSBase only if a double fault did not occur, because if it did we're already in kernel space.
 1:
 
@@ -152,7 +150,7 @@
 // fn TRAP_COMPLETE()
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
-	mov %gs:8, %rsp  // %gs:8 means offset 8 from the %gs segmentation register, which is offset 8 of the current TCB (which is the machine context).
+	mov %gs:8, %rsp  // %gs:8 means offset 8 from the %gs segmentation register, which is offset 8 of the current TCB (which is the machine context). Move this into rsp.
 
 	// CMPW will set stuff in RFLAGS depending on the result. If the value within *(%rsp + 152) is 8, jump to label 1, thus avoiding swapgs.
 	cmpw $0x08, 152(%rsp)  // Compare IRQ vector to see if it's a double fault. https://wiki.osdev.org/Interrupt_Descriptor_Table#IDT_items
@@ -160,7 +158,7 @@
 	swapgs
 1:
 	POP_STATE
-	add $8, %rsp  // Ignores the $0 value pushed if there was no argument passed.
+	add $8, %rsp  // Adding 8 to the stack pointer ignores the error value.
 	iretq
 .endm  // End of TRAP_COMPLETE
 
@@ -190,8 +188,8 @@ x86_return_to_task:
 .type x86_irq_trap_\nr, %function
 x86_irq_trap_\nr:
 	TRAP_BEGIN \has_arg
-	mov $\nr, %edi  // first arg (IRQ number)
-    mov %rsp, %rsi  // second arg (machine context I think)
+	mov $\nr, %edi  // first arg (IRQ number) is moved into edi.
+    mov %rsp, %rsi  // second arg (machine context I think) is moved into rsi
 .endm  // End of IRQ_TRAP_PRE
 
 
@@ -478,7 +476,7 @@ reload_cs:  // Reload code segment.
     // Get hold of the return RIP
     pop %rax
 
-    // Remember the stack pointer of the caller
+    // Remember the stack pointer of the caller, put it into rcx.
     mov %rsp, %rcx
 
 	// This is the same order that stuff is defined in machine context, which is intentional because it's the order that stuff is modified when a CPU calls an interrupt handler.
@@ -500,7 +498,7 @@ reload_cs:  // Reload code segment.
 // So is this the function that calls whatever we've defined as the handler function?
 x86_call_isr:
 	push %rbp       // Push the base pointer to the stack.
-	mov %rsp, %rbp  // Set the stack pointer to the current base pointer.
+	mov %rsp, %rbp  // Set the base pointer to the current stack pointer, marking the top of the current frame (which will grow down).
 
 	// Align stack pointer
 	and	$~0xf, %rsp

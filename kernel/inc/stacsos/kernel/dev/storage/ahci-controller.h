@@ -33,7 +33,7 @@ public:
 private:
 	static void ahci_irq_handler(u8 irq, void* ctx, void* arg);
 	ahci_port_type detect_port(volatile hba_port* port);
-	ahci_storage_device *activate_port(volatile hba_port* port, u64 clb, u64 fis);
+	ahci_storage_device* activate_port(volatile hba_port* port, u64 clb, u64 fis);
 	void handle_interrupt();
 
 	pci::pci_device & pcidev_;

@@ -286,13 +286,13 @@ struct trap_gate_descriptor
 struct gdt_pointer
 {
 	u16 length;
-	const void *ptr;
+	const void* ptr;
 } __packed;
 
 struct idt_pointer
 {
 	u16 length;
-	const void *ptr;
+	const void* ptr;
 } __packed;
 
 class x86_core;

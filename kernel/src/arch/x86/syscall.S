@@ -30,7 +30,7 @@ syscall_entry:
 	push %r14
 	push %r15
 
-	xor %rbp, %rbp
+	xor %rbp, %rbp  // Sets rbp to 0.
 
 	// Now, we can't use RCX and R11 for arguments, because RCX is the return address, and R11 are saved flags.
 	// But, we've pushed them to the stack, so we can twiddle some values.

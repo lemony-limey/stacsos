@@ -118,7 +118,7 @@ bool global_descriptor_table<MAX_NR_GDT_ENTRIES>::add_call_gate(u16 target_segme
  * @param ptr The linear address of the TSS structure.
  * @return Returns true if the insertion was successful, false otherwise.
  */
-template <int MAX_NR_GDT_ENTRIES> bool global_descriptor_table<MAX_NR_GDT_ENTRIES>::add_tss(task_state_segment &tss)
+template <int MAX_NR_GDT_ENTRIES> bool global_descriptor_table<MAX_NR_GDT_ENTRIES>::add_tss(task_state_segment & tss)
 {
 	// Need -1 here, because the TSS descriptor takes up TWO GDT slots.
 	if (current_ >= MAX_NR_GDT_ENTRIES - 1)
@@ -138,7 +138,7 @@ template <int MAX_NR_GDT_ENTRIES> bool global_descriptor_table<MAX_NR_GDT_ENTRIE
  * @return Returns true if initialisation was successful, false otherwise.
  */
 template <int MAX_NR_IDT_ENTRIES>
-interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::interrupt_descriptor_table(x86_core &owner)
+interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::interrupt_descriptor_table(x86_core & owner)
 	: descriptor_table(owner)
 	, max_index_(0)
 {
@@ -152,7 +152,8 @@ static void unhandled_exception_handler() { panic("unhandled exception"); }
 
 template <int MAX_NR_IDT_ENTRIES> void interrupt_descriptor_table<MAX_NR_IDT_ENTRIES>::initialise_exception_vectors()
 {
-	for (int i = 0; i < 256; i++) {
+	for (int i = 0; i < 256; i++)
+	{
 		register_interrupt_gate(i, (uintptr_t)unhandled_exception_handler, 0x8, descriptor_privilege_level::ring0);
 	}
 }

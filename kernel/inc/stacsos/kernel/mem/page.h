@@ -22,19 +22,19 @@ class page
 	friend class memory_manager;
 
 public:
-	static page &get_from_pfn(pfn_t pfn) { return get_pagearray()[pfn]; }
-	static page &get_from_base_address(u64 base_addr) { return get_pagearray()[base_addr >> PAGE_BITS]; }
+	static page & get_from_pfn(pfn_t pfn) { return get_pagearray()[pfn]; }
+	static page & get_from_base_address(u64 base_addr) { return get_pagearray()[base_addr >> PAGE_BITS]; }
 
 	pfn_t pfn() const { return ((u64)this - (u64)get_pagearray()) / sizeof(page); }
 	u64 base_address() const { return pfn() << PAGE_BITS; }
-	void *base_address_ptr() const { return (void *)(base_address() + 0xffff'8000'0000'0000ull); }
+	void* base_address_ptr() const { return (void *)(base_address() + 0xffff'8000'0000'0000ull); }
 
 	u64 refcount() const { return refcount_; }
 	void acquire() { refcount_++; }
 	bool release() { return !(refcount_--); }
 
 private:
-	static page *get_pagearray() { return reinterpret_cast<page *>(&_DYNAMIC_DATA_START); }
+	static page* get_pagearray() { return reinterpret_cast<page *>(&_DYNAMIC_DATA_START); }
 
 	page_type type_;
 	page_state state_;

@@ -16,9 +16,9 @@ namespace stacsos::kernel::sched::alg {
 
 class round_robin : public scheduling_algorithm {
 public:
-	virtual void add_to_runqueue(tcb &tcb) override;
-	virtual void remove_from_runqueue(tcb &tcb) override;
-	virtual tcb* select_next_task(tcb *current) override;
+	virtual void add_to_runqueue(tcb & tcb) override;
+	virtual void remove_from_runqueue(tcb & tcb) override;
+	virtual tcb* select_next_task(tcb* current) override;
 	virtual const char* name() const { return "round robin"; }
 };
 } // namespace stacsos::kernel::sched::alg

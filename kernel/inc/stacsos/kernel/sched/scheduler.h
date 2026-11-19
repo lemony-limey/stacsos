@@ -7,7 +7,8 @@
  */
 #pragma once
 
-namespace stacsos::kernel::sched {
+namespace stacsos::kernel::sched
+{
 class schedulable_entity;
 
 class scheduler {
@@ -17,7 +18,7 @@ private:
 	scheduler() { }
 
 public:
-	void add_to_schedule(schedulable_entity &e);
-	void remove_from_schedule(schedulable_entity &e);
+	void add_to_schedule(schedulable_entity & e);
+	void remove_from_schedule(schedulable_entity & e);
 };
 } // namespace stacsos::kernel::sched

@@ -16,12 +16,13 @@ void vfs::init()
 	//
 }
 
-fs_node* vfs::lookup(const char *path)
+fs_node* vfs::lookup(const char* path)
 {
 	// dprintf("vfs: lookup '%s'\n", path);
 
 	// All paths MUST be absolute.  To avoid any confusion.
-	if (path[0] != '/') {
+	if (path[0] != '/')
+	{
 		return nullptr;
 	}
 

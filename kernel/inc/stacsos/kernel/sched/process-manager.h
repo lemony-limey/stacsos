@@ -25,7 +25,7 @@ public:
 	void init();
 
 	shared_ptr<process> create_kernel_process(continuation_fn ep);
-	shared_ptr<process> create_process(const char *path, const char *args);
+	shared_ptr<process> create_process(const char* path, const char* args);
 
 	shared_ptr<process> kernel_process() const { return kernel_process_; }
 

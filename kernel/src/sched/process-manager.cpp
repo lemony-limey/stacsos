@@ -22,9 +22,11 @@ using namespace stacsos::kernel::arch;
 
 void process_manager::init() { dprintf("processes: init\n"); }
 
+// There is only 1 kernel process by the sound of things.
 shared_ptr<process> process_manager::create_kernel_process(continuation_fn cfn)
 {
-	if (kernel_process_) {
+	if (kernel_process_)
+	{
 		panic("Kernel process already created");
 	}
 

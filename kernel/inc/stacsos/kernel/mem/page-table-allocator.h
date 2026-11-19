@@ -10,11 +10,13 @@
 #include <stacsos/kernel/mem/page-allocator.h>
 #include <stacsos/kernel/mem/page.h>
 
-namespace stacsos::kernel::mem {
+namespace stacsos::kernel::mem 
+{
 
-class page_table_allocator {
+class page_table_allocator
+{
 public:
-	page& allocate();
-	void free(page& pg);
+	page & allocate();
+	void free(page & pg);
 };
 } // namespace stacsos::kernel::mem
