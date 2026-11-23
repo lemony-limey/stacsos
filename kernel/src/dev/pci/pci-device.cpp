@@ -101,6 +101,7 @@ void pci_device::register_msi(irq_handler_fn handler, void* arg)
 {
 	for (auto cap : capabilities())
 	{
+		// What does 0x05 indicate?
 		if (cap.vendor == 0x05)
 		{
 			dprintf("pci: found msi capability\n");
@@ -118,10 +119,11 @@ void pci_device::register_msi(irq_handler_fn handler, void* arg)
 			// What else was this address used for?
 			// Bits 31..=20 are always 0x0fee for interrupt messages.
 			u64 msi_address = 0xFEE00000;
+			// write_config_value<T>(offset: u8, value: T)
 			config_.write_config_value<u32>(cap.offset + 4, (u32)msi_address); // low
 			config_.write_config_value<u32>(cap.offset + 8, (u32)(msi_address >> 32)); // high
 
-			// Activate MSI data payload
+			// Activate MSI data payload for the given IRQ number that was assigned.
 			u32 data = 0x4000 | irqnr;
 			config_.write_config_value<u32>(cap.offset + 12, data);
 

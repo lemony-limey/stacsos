@@ -12,7 +12,7 @@
 using namespace stacsos::kernel::sched;
 using namespace stacsos::kernel::sched::alg;
 
-tcb *simple_fair_scheduler::select_next_task(tcb *current)
+tcb *simple_fair_scheduler::select_next_task(tcb* _current)
 {
 	if (runqueue_.empty()) {
 		return nullptr;

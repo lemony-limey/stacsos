@@ -48,9 +48,9 @@ protected:
 
 private:
 	filesystem & fs_;
-	fs_node* parent_node_;
+	fs_node*     parent_node_;
 	fs_node_kind kind_;
-	filesystem* mounted_fs_;
-	string name_;
+	filesystem*  mounted_fs_;
+	string       name_;
 };
 } // namespace stacsos::kernel::fs

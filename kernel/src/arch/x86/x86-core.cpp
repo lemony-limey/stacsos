@@ -37,7 +37,7 @@ void x86_core::init()
 	lapic_.init();
 	timer_.init();
 
-	// Create a temporary TCB so we can take the first interrupt.  This is needed
+	// Create a temporary TCB so we can take the first interrupt. This is needed
 	// because the IRQ handling code needs somewhere to store a pointer to the saved
 	// context.
 	temporary_tcb.context_ptr = 0;
@@ -45,11 +45,15 @@ void x86_core::init()
 	temporary_tcb.cr3 = 0;
 	temporary_tcb.kernel_stack = 0;
 
-	// Pop a pointer to this temporary TCB into GS.  It's not a /real/ tcb structure,
+	// Put a pointer to this temporary TCB into GS. It's not a /real/ tcb structure,
 	// so we can't use set_current_tcb.
 	gsbase::write((u64)&temporary_tcb);
 
-	for (int i = 0; i < 32; i++) {
+	// This handler function is stored in the IRQ manager, NOT the IDT.
+	// The IDT only contains the stub functions that know the IRQ vector values and set these us
+	// as arguments to enable interrupt dispatch with x86_handle_irq().
+	for (int i = 0; i < 32; i++)
+	{
 		irqs_.assign_irq(i, exception_handler, this);
 	}
 
@@ -80,6 +84,8 @@ stacsos::kernel::sched::tcb* x86_core::get_current_tcb() { return (stacsos::kern
 /// irq_nr - IRQ number, AKA index into the IDT
 /// mcontext - Machine Context, for a context switch
 /// arg - A pointer to the core in question?
+/// Is there ever a case in which we would want to call schedule on a core other than the current one?
+/// Can we not just use CORE_MANAGER::get_this_core().schedule()?
 static void yield_handler(u8 irq_nr, void* mcontext, void* arg)
 {
 	x86_core* c = (x86_core*)arg;
@@ -108,6 +114,9 @@ void x86_core::populate_dt()
 	// The IRQ manager takes care of the IDT
 	irqs_.initialise();
 	// Interesting that 0xff is reserved for yield_handler instead of spurious vector.
+	// Calls schedule() for the current core.
+	// Saves yield_handler() as the IRQ manager handler function for 0xff (spurious vector),
+	// 
 	irqs_.reserve_irq(0xff, yield_handler, this);
 
 	// The TSS is needed for swapping stacks if we're going into USER mode.

@@ -134,15 +134,15 @@
 
 	// Is it because it's 16-byte aligned?
 	cmpw $0x08, 152(%rsp)  // 152 = 8 * 19. 17 registers are pushed by PUSH_STATE and 1 earlier in this macro if an argument was pushed. What is on the stack right before this?
-	                       // It could be the case that the extra 8 bytes is there for alignment purposes to account for both cases (error val does or does not exist).
+						   // This value is the Code Segment selector, which is pushed by the CPU when the interrupt first occurs.	
 						   // The kernel code selector in the GDT is at address 0x08. We know we're in kernel mode if the current segment is a kernel one.
 						   // https://wiki.osdev.org/Interrupt_Descriptor_Table#IDT_items
 	je 1f  // "1" is a label, "f" indicates that the jump is forwards.
-	swapgs // Swap GSBase and KernelGSBase only if a double fault did not occur, because if it did we're already in kernel space.
+	swapgs // Swap GSBase and KernelGSBase only if we're not already in kernel space.
 1:
 
-	// Store the stack pointer (which is holding the saved context) into GS:8
-	// GS holds the current TCB, and GS:8 is a pointer to the saved context.
+	// Store the stack pointer (which is holding pointer to the top of the saved context) into GS:8. It is currently pointing at the 19th thing.
+	// GS holds the current TCB (not TSS), and GS:8 is a pointer to the saved context (the part where the code segment is?).
 	mov %rsp, %gs:8
 .endm  // End of TRAP_BEGIN
 
@@ -150,6 +150,7 @@
 // fn TRAP_COMPLETE()
 .macro TRAP_COMPLETE
 	// Prepare to return from interrupt
+	// Put the address of the machine context into rsp so it is pointing at the correct stuff.
 	mov %gs:8, %rsp  // %gs:8 means offset 8 from the %gs segmentation register, which is offset 8 of the current TCB (which is the machine context). Move this into rsp.
 
 	// CMPW will set stuff in RFLAGS depending on the result. If the value within *(%rsp + 152) is 8, jump to label 1, thus avoiding swapgs.
@@ -163,16 +164,14 @@
 .endm  // End of TRAP_COMPLETE
 
 
+// fn x86_return_to_task()
+// This is what is called at the end of core::run().
 // .text defines a code section.
 .text
-// 16-bit aligned, or 16-byte aligned?. Probably byte.
+// 16-byte aligned. 16-bytes = 64 bits.
 .align 16
 .globl x86_return_to_task
 .type x86_return_to_task,%function
-
-
-// fn x86_return_to_task()
-// This is what is called at the end of core::run().
 x86_return_to_task:
 	TRAP_COMPLETE
 .size x86_return_to_task,.-x86_return_to_task  // here is this weird syntax again
@@ -182,11 +181,10 @@ x86_return_to_task:
 .macro IRQ_TRAP_PRE,nr,has_arg
 .text
 .align 16
-// Does .globl create a globally visible label/identifier for this section?
 // THIS IS WHERE THE HANDLER FUNCTIONS FROM irq-traps.h ARE DEFINED.
 .globl x86_irq_trap_\nr
 .type x86_irq_trap_\nr, %function
-x86_irq_trap_\nr:
+x86_irq_trap_\nr:  // This is a label and not a function.
 	TRAP_BEGIN \has_arg
 	mov $\nr, %edi  // first arg (IRQ number) is moved into edi.
     mov %rsp, %rsi  // second arg (machine context I think) is moved into rsi
@@ -202,9 +200,9 @@ x86_irq_trap_\nr:
 
 // fn IRQ_TRAP(nr: u8, has_arg: bool)
 .macro IRQ_TRAP,nr,has_arg
-	IRQ_TRAP_PRE \nr \has_arg
-	call x86_handle_irq  // Args are supplied by IRQ_TRAP_PRE
-	IRQ_TRAP_POST \nr 
+	IRQ_TRAP_PRE \nr \has_arg // Pushes error code to stack if applicable, pushes state to stack, switches GS, puts the arguments in position.
+	call x86_handle_irq       // Args are supplied by IRQ_TRAP_PRE. This calls handle_irq() for the current core's IRQ manager in irq-manager.cpp.
+	IRQ_TRAP_POST \nr         // Switches GS, pops state from stack, removes error code.
 .endm  // End of IRQ_TRAP
 
 
@@ -469,11 +467,12 @@ IRQ_TRAP 253 0
 IRQ_TRAP 254 0
 IRQ_TRAP 255 0
 
+// Does this stuff actually do anything?
 .align 16                  // 16-byte align
 .globl reload_cs           // define the name reload_cs globally
 .type reload_cs,%function  // state that the globally defined name "reload_cs" refers to a function/is a function pointer.
 reload_cs:  // Reload code segment.
-    // Get hold of the return RIP
+    // Get hold of the return RIP by popping it off the stack and into rip.
     pop %rax
 
     // Remember the stack pointer of the caller, put it into rcx.
@@ -500,7 +499,7 @@ x86_call_isr:
 	push %rbp       // Push the base pointer to the stack.
 	mov %rsp, %rbp  // Set the base pointer to the current stack pointer, marking the top of the current frame (which will grow down).
 
-	// Align stack pointer
+	// Align stack pointer (rounding down? probably, because that would not overwrite anything already on the stack)
 	and	$~0xf, %rsp
 
 	// Same as before with "reload_cs", but why is RIP not pushed also?

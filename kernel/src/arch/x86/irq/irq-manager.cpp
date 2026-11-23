@@ -17,7 +17,13 @@ using namespace stacsos::kernel;
 using namespace stacsos::kernel::arch::x86;
 using namespace stacsos::kernel::arch::x86::irq;
 
-static irq_trap_fn_type irq_trap_functions[] = { x86_irq_trap_0, x86_irq_trap_1, x86_irq_trap_2, x86_irq_trap_3, x86_irq_trap_4, x86_irq_trap_5, x86_irq_trap_6,
+// These are all function pointers that were defined by the DECLARE_IRQ_TRAP macro in irq-traps.h.
+// All of these symbols are added to this array so we can easily iterate through them with a for-loop and assign them as the
+// handlers for each of the IRQ vector entries in the IDT.
+// typedef void (*irq_trap_fn_type)(void);
+// Each of these functions calls x86_handle_irq (below this block) with the appropriate arguments.
+static irq_trap_fn_type irq_trap_functions[] = { 
+	x86_irq_trap_0, x86_irq_trap_1, x86_irq_trap_2, x86_irq_trap_3, x86_irq_trap_4, x86_irq_trap_5, x86_irq_trap_6,
 	x86_irq_trap_7, x86_irq_trap_8, x86_irq_trap_9, x86_irq_trap_10, x86_irq_trap_11, x86_irq_trap_12, x86_irq_trap_13, x86_irq_trap_14, x86_irq_trap_15,
 	x86_irq_trap_16, x86_irq_trap_17, x86_irq_trap_18, x86_irq_trap_19, x86_irq_trap_20, x86_irq_trap_21, x86_irq_trap_22, x86_irq_trap_23, x86_irq_trap_24,
 	x86_irq_trap_25, x86_irq_trap_26, x86_irq_trap_27, x86_irq_trap_28, x86_irq_trap_29, x86_irq_trap_30, x86_irq_trap_31, x86_irq_trap_32, x86_irq_trap_33,
@@ -47,10 +53,13 @@ static irq_trap_fn_type irq_trap_functions[] = { x86_irq_trap_0, x86_irq_trap_1,
 	x86_irq_trap_225, x86_irq_trap_226, x86_irq_trap_227, x86_irq_trap_228, x86_irq_trap_229, x86_irq_trap_230, x86_irq_trap_231, x86_irq_trap_232,
 	x86_irq_trap_233, x86_irq_trap_234, x86_irq_trap_235, x86_irq_trap_236, x86_irq_trap_237, x86_irq_trap_238, x86_irq_trap_239, x86_irq_trap_240,
 	x86_irq_trap_241, x86_irq_trap_242, x86_irq_trap_243, x86_irq_trap_244, x86_irq_trap_245, x86_irq_trap_246, x86_irq_trap_247, x86_irq_trap_248,
-	x86_irq_trap_249, x86_irq_trap_250, x86_irq_trap_251, x86_irq_trap_252, x86_irq_trap_253, x86_irq_trap_254, x86_irq_trap_255 };
+	x86_irq_trap_249, x86_irq_trap_250, x86_irq_trap_251, x86_irq_trap_252, x86_irq_trap_253, x86_irq_trap_254, x86_irq_trap_255 
+};
 
 // Why does this have extern "C" but also a definition? Maybe it's to say it's declared elsewhere but defined here?
 // Extern C prevents name mangling.
+// This is called from within IRQ_TRAP, so extern C likely makes it visible from the irq-traps.S file.
+// using irq_handler_fn = void (*)(u8 irq, void* ctx, void* arg);
 extern "C" void x86_handle_irq(u8 irq_number, void* mcontext) { x86_core::this_core().irqmgr().handle_irq(irq_number, mcontext); }
 
 static void unhandled_interrupt(u8 irq_number, void* mcontext, void* arg)

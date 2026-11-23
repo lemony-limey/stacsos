@@ -50,7 +50,7 @@ void ioapic::store_redir_entry(u8 irq_index, const redirection_entry & e)
 	write(configuration_register + 1, e.high);  // ioapic::write()
 }
 
-/// Allocate calls map.
+/// Allocate calls map and allocates the IRQ on the target core.
 /// @brief Allocates a handler function for a given IRQ for a given core.
 /// @param phys_irq_nr 
 /// @param target_core 

@@ -53,6 +53,8 @@ public:
 	virtual u64 nr_blocks() const override { return nr_blocks_; }
 
 protected:
+	// Virtual = dynamic dispatch.
+	// This function is overriding a version from a superclass.
 	virtual void submit_real_io_request(block_io_request & request) override
 	{
 		block_io_request underlying_request;
@@ -63,7 +65,9 @@ protected:
 
 		owner_.submit_io_request(underlying_request);
 
+		// Wait for I/O request to finish. Will stop blocking when completion is signalled.
 		underlying_request.completion.wait();
+		// Indicate that the request has finished by signalling the request completion.
 		request.completion.signal();
 	}
 

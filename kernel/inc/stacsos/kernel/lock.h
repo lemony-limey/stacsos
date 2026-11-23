@@ -15,8 +15,10 @@ extern "C" void spinlock_release(spinlock_var_t* lv);
 extern "C" void spinlock_irq_acquire(spinlock_var_t* lv, u64* flags);
 extern "C" void spinlock_irq_release(spinlock_var_t* lv, u64 flags);
 
-namespace stacsos::kernel {
-class spinlock {
+namespace stacsos::kernel
+{
+class spinlock
+{
 public:
 	spinlock()
 		: spin_lock_var_(0)
@@ -32,7 +34,8 @@ private:
 	spinlock_var_t spin_lock_var_;
 };
 
-class spinlock_irq {
+class spinlock_irq
+{
 public:
 	spinlock_irq()
 		: spin_lock_var_(0)
@@ -48,7 +51,8 @@ private:
 	spinlock_var_t spin_lock_var_;
 };
 
-class unique_irq_lock {
+class unique_irq_lock
+{
 public:
 	explicit unique_irq_lock(spinlock_irq & o)
 		: mutex_(&o)

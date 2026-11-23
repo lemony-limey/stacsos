@@ -56,8 +56,8 @@ private:
 		{
 			struct
 			{
-				// BUG: Should this be two u32s, not 2 u64s?
-				// Maybe not, because this allows them to be bitshifted.
+				// These are both u64s, because this allow their u32 values to be bitshifted and saved in the bitshifted form.
+				// Still could be 2 u32s though.
 				u64 low, high;
 			} __packed;
 

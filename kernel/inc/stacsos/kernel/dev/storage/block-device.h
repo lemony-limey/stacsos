@@ -22,7 +22,7 @@ struct block_io_request
 	u64 start_block;
 	u64 block_count;
 	void* buffer;
-	sched::completion completion;
+	sched::completion completion;  // The handle to wake the thread?
 };
 
 class block_device : public device

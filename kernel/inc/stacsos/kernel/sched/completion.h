@@ -5,6 +5,7 @@
 
 namespace stacsos::kernel::sched
 {
+// Completions are how condition variables are implemented.
 class completion
 {
 public:
@@ -14,6 +15,7 @@ public:
 	{
 	}
 
+	// Blocks until completion is signalled, if it has not already been signalled.
 	void wait()
 	{
 		u64 flags;
@@ -39,6 +41,8 @@ public:
 		lock_.unlock(flags);
 	}
 
+	// Indicates that the completion has finished, and unblocks the wait() call if it
+	// has already been made.
 	void signal()
 	{
 		unique_irq_lock l(lock_);

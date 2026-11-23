@@ -19,25 +19,27 @@ using namespace stacsos::kernel::fs;
 class devfs_node;
 class device;
 
+// Part of the filesystem where each of the devices on the system are represented as devices.
 class devfs : public filesystem
 {
 public:
 	devfs();
 
 	virtual ~devfs() { }
-	virtual fs_node & root() override { return *(fs_node *)root_; }
+	virtual fs_node & root() override { return *(fs_node*)root_; }
 
 private:
 	devfs_node* root_;
 };
 
+// Represents the file corresponding to an individual device.
 class devfs_node : public fs_node
 {
 	friend class devfs;
 
 public:
 	devfs_node(filesystem & fs, fs_node* parent, fs_node_kind kind, const string & name, device* dev)
-		: fs_node(fs, parent, kind, name)
+		: fs_node(fs, parent, kind, name) // The constructor of the superclass
 		, dev_(dev)
 	{}
 
