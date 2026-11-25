@@ -65,6 +65,7 @@
 	movl $0xc0000100, %ecx
 	rdmsr
 	shl $32, %rdx
+	mov %eax, %eax
 	or %rdx, %rax
 
 	push %rax
@@ -73,6 +74,7 @@
 	movl $0xc0000101, %ecx
 	rdmsr
 	shl $32, %rdx
+	mov %eax, %eax
 	or %rdx, %rax
 
 	push %rax

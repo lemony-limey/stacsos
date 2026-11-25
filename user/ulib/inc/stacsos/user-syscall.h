@@ -99,7 +99,7 @@ private:
 	static syscall_result syscall0(syscall_numbers id)
 	{
 		syscall_result r;
-		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id) : "flags", "rcx");
+		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id) : "flags", "rcx", "r11");
 		return r;
 	}
 
@@ -107,7 +107,7 @@ private:
 	static syscall_result syscall1(syscall_numbers id, u64 arg0)
 	{
 		syscall_result r;
-		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0) : "flags", "rcx");
+		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0) : "flags", "rcx", "r11");
 		return r;
 	}
 
@@ -115,7 +115,7 @@ private:
 	static syscall_result syscall2(syscall_numbers id, u64 arg0, u64 arg1)
 	{
 		syscall_result r;
-		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0), "S"(arg1) : "flags", "rcx");
+		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0), "S"(arg1) : "flags", "rcx", "r11");
 		return r;
 	}
 
@@ -123,7 +123,7 @@ private:
 	static syscall_result syscall3(syscall_numbers id, u64 arg0, u64 arg1, u64 arg2)
 	{
 		syscall_result r;
-		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0), "S"(arg1), "d"(arg2) : "flags", "rcx");
+		asm volatile("syscall" : "=a"(r.code), "=d"(r.data) : "a"(id), "D"(arg0), "S"(arg1), "d"(arg2) : "flags", "rcx", "r11");
 		return r;
 	}
 
