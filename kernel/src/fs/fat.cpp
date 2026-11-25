@@ -30,7 +30,9 @@ struct bios_parameter_block {
 	u32 nr_large_sectors;
 } __packed;
 
-struct fat12_ebr {
+// EBR = extended boot record
+struct fat12_ebr
+{
 	u8 drive_number;
 	u8 nt_flags;
 	u8 signature;
@@ -41,7 +43,9 @@ struct fat12_ebr {
 	u16 partition_signature;
 } __packed;
 
-struct fat32_ebr {
+// EBR = extended boot record
+struct fat32_ebr
+{
 	u32 sectors_per_fat;
 	u16 flags;
 	u16 fat_version;
@@ -104,7 +108,7 @@ void fat_filesystem::init()
 		panic("FAT32 not supported");
 	}
 
-	const fat12_ebr *ebr = (const fat12_ebr *)&buffer[0x24];
+	const fat12_ebr* ebr = (const fat12_ebr*)&buffer[0x24];
 
 	if (ebr->signature != 0x29) {
 		panic("fat: invalid FAT signature");
@@ -139,7 +143,7 @@ u64 fat_filesystem::next_cluster(u64 this_cluster)
 	return value;
 }
 
-fs_node *fat_node::mkdir(const char *name)
+fs_node* fat_node::mkdir(const char* name)
 {
 	auto new_dir = new fat_node(fs(), this, fs_node_kind::directory, string(name), 0, 0, 0);
 	children_.append(new_dir);
@@ -147,12 +151,14 @@ fs_node *fat_node::mkdir(const char *name)
 	return new_dir;
 }
 
-fs_node *fat_node::resolve_child(const string &name)
+fs_node* fat_node::resolve_child(const string & name)
 {
 	load();
 
-	for (auto child : children_) {
-		if (child->name() == name) {
+	for (auto child : children_)
+	{
+		if (child->name() == name)
+		{
 			return child;
 		}
 	}
@@ -162,11 +168,12 @@ fs_node *fat_node::resolve_child(const string &name)
 
 void fat_node::load()
 {
+	// Do nothing if the node has already been loaded
 	if (loaded_) {
 		return;
 	}
 
-	fat_filesystem &fatfs = ((fat_filesystem &)fs());
+	fat_filesystem & fatfs = ((fat_filesystem &)fs());
 
 	u64 this_cluster = cluster_;
 
@@ -178,6 +185,7 @@ void fat_node::load()
 		bool has_long_filename = false;
 		string long_filename;
 
+		// dentry = Data entry?
 		for (const u8 *dentry = &(cluster_data.get())[0]; dentry < &(cluster_data.get())[512 * fatfs.sectors_per_cluster]; dentry += 32) {
 			if (dentry[0] == 0) {
 				// No more files in this directory.
@@ -264,7 +272,9 @@ void fat_node::load()
 
 void fat_file::read_cluster_list(u64 first_cluster, u64 file_size)
 {
+	// 512 is the size of a sector in bytes?
 	u64 cluster_size = (512 * fs_.sectors_per_cluster);
+	// Why -1 to cluster size? Integer division as well.
 	nr_clusters_ = (file_size + (cluster_size - 1)) / cluster_size;
 
 	clusters_ = new u64[nr_clusters_];
@@ -282,7 +292,7 @@ void fat_file::read_cluster_list(u64 first_cluster, u64 file_size)
 	}
 }
 
-size_t fat_file::pread(void *buffer, size_t offset, size_t length)
+size_t fat_file::pread(void* buffer, size_t offset, size_t length)
 {
 	u64 cluster_size = (512 * fs_.sectors_per_cluster);
 	u64 target_cluster_index = offset / cluster_size;
@@ -290,10 +300,11 @@ size_t fat_file::pread(void *buffer, size_t offset, size_t length)
 
 	u64 this_cluster = clusters_[target_cluster_index++];
 
-	u8 *buffer_pos = (u8 *)buffer;
+	u8* buffer_pos = (u8*)buffer;
 
 	u64 remaining_length = length;
-	while (remaining_length > 0) {
+	while (remaining_length > 0)
+	{
 		u64 read_length = ((target_cluster_offset + remaining_length) > cluster_size) ? (cluster_size - target_cluster_offset) : remaining_length;
 
 		auto cluster_data = fs_.read_cluster(this_cluster);
@@ -321,4 +332,4 @@ size_t fat_file::pread(void *buffer, size_t offset, size_t length)
 	return length - remaining_length;
 }
 
-size_t fat_file::pwrite(const void *buffer, size_t offset, size_t length) { return 0; }
+size_t fat_file::pwrite(const void* buffer, size_t offset, size_t length) { return 0; }

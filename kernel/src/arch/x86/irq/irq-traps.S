@@ -503,10 +503,10 @@ x86_call_isr:
 	and	$~0xf, %rsp
 
 	// Same as before with "reload_cs", but why is RIP not pushed also?
-	pushq $0x10		// KERNEL_SS
+	pushq $0x10		// KERNEL_SS (kernel data segment)
 	pushq %rbp		// RSP
 	pushfq			// RFLAGS
-	pushq $0x08		// KERNEL_CS
+	pushq $0x08		// KERNEL_CS (kernel code segment)
 	// Interrupts are disabled during the call. This could be to prevent other interrupts from happening while the ISR is executing.
 	// Hence it is probably wise that the ISR is minimal in size.
 	cli 

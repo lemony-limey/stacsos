@@ -10,6 +10,8 @@
 namespace stacsos::kernel::fs
 {
 class filesystem;
+
+// Generic handle for a file.
 class file
 {
 public:

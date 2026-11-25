@@ -18,6 +18,7 @@ namespace stacsos::kernel::fs
 class fat_filesystem;
 class fat_file;
 
+
 class fat_file : public file
 {
 public:

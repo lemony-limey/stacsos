@@ -35,6 +35,7 @@ public:
 	static const int stack_size_order = 4;
 	static const size_t stack_size = (1 << stack_size_order) * PAGE_SIZE;
 
+	// Thread constructor creates the TCB, which is an attribute inherited from the superclass schedulable_entity.
 	thread(process & owner, u64 ep = 0, void* ep_arg = nullptr, u64 user_stack = 0);
 
 	thread_states state() const { return state_; }

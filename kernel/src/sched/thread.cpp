@@ -50,7 +50,7 @@ void thread::stop()
 void thread::suspend() { change_state(thread_states::suspended); }
 void thread::resume() { change_state(thread_states::runnable); }
 
-// What is a task entry "trampoline"?
+// What is a task entry "trampoline"? The thing that loads it into the scheduler immediately before the next tick occurs.
 void thread::task_entry_trampoline(thread* thread) // -> !
 {
 	// If there is an entry point, then run it and stop the task once it has completed.
